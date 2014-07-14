@@ -3,8 +3,8 @@ import processing.video.*;
 Capture cam;
 int[][] objects;
 int l,h;
-//ArrayList<Integer> label;
-//ArrayList<Integer> unique;
+ArrayList<Integer> label;
+ArrayList<Integer> unique;
 int[][] edges;
 
 void setup() {
@@ -39,15 +39,65 @@ void draw() {
   }
   image(cam, 0, 0);
   objects = new int[h][l];
+  label = new ArrayList<Integer>();
+  label.add(0);
+  unique = new ArrayList<Integer>();
   
   loadPixels();
   markBlobs();
   updatePixels();
   
-  findEdges();
+  markSeparate();
+  findUnique();
+  
+  fillBiggest();
+  //findEdges();
   updatePixels();
 }
 
+void fillBiggest() {
+  int max = 0;
+  for (int i =0; i < unique.size(); i++) {
+    if (unique.get(i) > max) {
+      max = unique.get(i);
+    }
+  }
+  int[] sizes = new int[ max ];
+  for (int y = 0; y<h; y++) {
+    for (int x = 0; x<l; x++) {
+      int cur = y*l+x;
+      if (objects[y][x] != 0) {
+        int i = objects[y][x];
+        while( ((int)label.get(i)) != i ) {
+          i = label.get(i);
+        } 
+        sizes[(i-1)]++;
+      }
+    }
+  }
+  int biggest = 0;
+  for (int i =0; i< sizes.length; i++) {
+    if (sizes[i] > sizes[biggest]) {
+      biggest = i;
+    }
+  }
+  for (int y = 0; y<h; y++) {
+    for (int x = 0; x<l; x++) { 
+      int cur = y*l+x;
+      if (objects[y][x] != 0) {
+        int i = objects[y][x];
+        while( ((int)label.get(i)) != i ) {
+          i = label.get(i);
+        } 
+        if (i == biggest) {
+          pixels[cur] = color(255,0,0);
+        }
+      }
+    }
+  }
+  
+}
+  
 void markBlobs() {
   for (int y = 0; y < h; y++) {
     for (int x = 0; x <l; x++) {
@@ -143,4 +193,100 @@ void makeRect( int[][] coords ) {
   stroke(255,0,0);
   rect( minX, minY, maxX - minX, maxY - minY );
   fill(255);
+}
+
+void markSeparate() {
+  int cnt = 1;
+  int cur;
+
+  for (int y = 0; y<h; y++) {
+    for (int x = 0; x<l; x++) {
+      
+      cur = y*l+x;
+      int a = 0;
+      int b = 0;
+      int c = 0;
+      int d = 0;
+      if ( objects[y][x] == 255) {
+      
+        if ( inBounds(y-1, x-1) ) {
+          a = objects[y-1][x-1];
+        }
+          
+        if ( inBounds(y-1, x) ) {
+          b= objects[y-1][x];
+        }
+        if ( inBounds(y-1, x+1) ) {
+          c = objects[y-1][x+1];
+        }
+        if ( inBounds(y, x-1) ) {
+          d = objects[y][x-1];
+        }
+        if ( a==0 && b==0 && c==0 && d==0 ) {
+          objects[y][x] = cnt;
+          label.add(cnt);
+          cnt++;
+        }
+        else {
+          int min = findMin(a,b,c,d);
+          objects[y][x] = min;
+          if (a!=0){
+            label.set( a, min ); 
+          }
+          if (b!=0){
+            label.set( b, min ); 
+          }
+          if (b!=0) {
+            label.set( b, min ); 
+          }
+          if (b!=0) {
+            label.set( b, min ); 
+          }
+          
+        }
+      }
+    }
+  }
+}
+
+boolean inBounds( int i, int j ) {
+  return ( i > -1 && j > -1 && i < h && j < l );
+}
+
+void findUnique() {
+  for (int i =0; i<label.size(); i++) {
+    if ( ((int)label.get(i)) == i ) {
+      unique.add(i);
+    }
+  }
+  /*
+  //if (start) {
+    blobs = new color[ unique.size() ];
+    for (int i = 0; i < blobs.length; i++) {
+        blobs[i] = color( random(255), random(255), random(255 ) );
+    }
+    //start = false;
+  //}
+  */
+}
+
+int findMin( int a, int b, int c, int d ) {
+  ArrayList<Integer> cont = new ArrayList<Integer>();
+  if (a!=0)
+    cont.add(a);
+  if (b!=0)
+    cont.add(b);
+  if (c!= 0)
+    cont.add(c);
+  if (d!= 0)
+    cont.add(d);
+
+  int ret = cont.get(0);
+  for (int i = 1; i < cont.size(); i++) {
+    if (cont.get(i) < ret) {
+      ret = cont.get(i);
+    }
+  }
+  
+  return ret;
 }
