@@ -55,6 +55,11 @@ void markBlobs() {
         pixels[ y * l + x ] = color(255);
         objects[y][x] = 255;
       }
+      else {
+        pixels[ y * l + x ] = color(0);
+        objects[y][x] = 0;
+      }
+        
     }
   }
 }
