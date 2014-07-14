@@ -6,24 +6,15 @@ Minim minim;
 Minim hitMinim;
 
 PImage background;
-float score;
+float score,highscore;
 float ballX,ballY,ballZ;
 float xVel,yVel,zVel;
+boolean dead=true;
 
 void setup(){
   size(800,600); 
-  score=0; 
-  background=loadImage("Background.png");
-  minim = new Minim(this);
-  audioPlayer = minim.loadFile("Blob.mp3");
-  hitMinim = new Minim(this);
-  hitSound = hitMinim.loadFile("Hit.mp3");
-  audioPlayer.play();
-  audioPlayer.loop();
-  ballZ=0.01;
-  zVel=0.0015;
-  xVel=random(5)-2.5;
-  yVel=random(5)-2.5;
+  restart();
+  highscore=0;
 }
 
 void draw(){
@@ -34,6 +25,7 @@ void draw(){
   textSize(15);
   fill(0);
   text("Score: "+score,-380,-280);
+  text("Highscore: "+highscore,200,-280);
   fill(255*ballZ);
   if(ballZ>0.75)fill(0,255*ballZ,0);
   ellipse(ballX*ballZ,ballY*ballZ,50*ballZ,50*ballZ);
@@ -61,6 +53,10 @@ void draw(){
     textSize(50);
     text("GAME OVER\nScore: "+score,0,0);
     audioPlayer.pause();
+    dead = true;
+    if (score>highscore){
+      highscore = score;
+    }
   }
   if(ballX<=width/-2){
     xVel=abs(xVel);
@@ -74,12 +70,17 @@ void draw(){
   if(ballY>=height/2){
    yVel=abs(yVel)*-1; 
   }
+  if (dead){
+    if(mousePressed){
+      restart();
+    }
+  }
   println("X: "+ballX+", Y: "+ballY);
 }
 
 void mouseClicked(){
   if(ballZ>0.75 && ballZ<1.1){
-    if(mouseX-width/2>ballX-25 && mouseX-width/2<ballX+25 && mouseY-height/2>ballY-25 && mouseY-height/2<ballY+25){
+    if(mouseX-width/2>ballX-50 && mouseX-width/2<ballX+50 && mouseY-height/2>ballY-50 && mouseY-height/2<ballY+50){
       println("hit");
       hitSound.play();
       hitSound.rewind();
@@ -91,4 +92,24 @@ void mouseClicked(){
   }else{
       //score-=0.05;
     }
+}
+
+void setupScreen(){
+  background=loadImage("Background.png");
+  minim = new Minim(this);
+  audioPlayer = minim.loadFile("Blob.mp3");
+  hitMinim = new Minim(this);
+  hitSound = hitMinim.loadFile("Hit.mp3");
+  audioPlayer.play();
+  audioPlayer.loop();
+  ballZ=0.01;
+  zVel=0.0015;
+  xVel=random(5)-2.5;
+  yVel=random(5)-2.5;
+}
+
+void restart(){
+  score=0;
+  dead=false;
+  setupScreen();
 }
