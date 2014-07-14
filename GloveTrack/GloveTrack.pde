@@ -32,6 +32,9 @@ void setup() {
     
     cam.start();
   }
+  label = new ArrayList<Integer>();
+  label.add(0);
+  unique = new ArrayList<Integer>();
   
 }
   
@@ -51,9 +54,11 @@ void draw() {
   updatePixels();
   //image(cam, 0, 0);
   objects = new int[h][l];
-  label = new ArrayList<Integer>();
+
+  
+  label.clear();
   label.add(0);
-  unique = new ArrayList<Integer>();
+  unique.clear();
   
   loadPixels();
   markBlobs();
@@ -65,15 +70,9 @@ void draw() {
   fillBiggest();
   findEdges();
   updatePixels();
-<<<<<<< HEAD
 
   //pause();
   println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
-
-=======
-  //pause();
-  println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
->>>>>>> FETCH_HEAD
 }
 
 void fillBiggest() {
