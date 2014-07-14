@@ -66,7 +66,8 @@ void draw() {
   findEdges();
   updatePixels();
   //pause();
-  println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
+  fill(0,255,255);
+  ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
 }
 
 void fillBiggest() {
