@@ -55,11 +55,10 @@ void draw() {
   fillBiggest();
   findEdges();
   updatePixels();
-<<<<<<< HEAD
+
   //pause();
   println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
-=======
->>>>>>> 6e84a9c8ad111fe57616c8496b839d10fc56c40f
+
 }
 
 void fillBiggest() {
