@@ -50,7 +50,7 @@ void draw() {
 }
 
 
-float[] COG (float[] x, float[] y) {
+float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   float[] ans = new float[2];
   for (int h = 0; h < x.length; x++) {
     ans[0] += x[h];

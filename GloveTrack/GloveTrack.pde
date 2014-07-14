@@ -6,6 +6,8 @@ int l,h;
 ArrayList<Integer> label;
 ArrayList<Integer> unique;
 int[][] edges;
+ArrayList<Float> xLoc = new ArrayList<Float>();
+ArrayList<Float> yLoc = new ArrayList<Float>();
 
 void setup() {
   l = 640;
@@ -53,7 +55,8 @@ void draw() {
   fillBiggest();
   findEdges();
   updatePixels();
-  pause();
+  //pause();
+  println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
 }
 
 void fillBiggest() {
@@ -87,9 +90,12 @@ void fillBiggest() {
         } 
         if (i == biggest) {
           pixels[cur] = color(255);
+          xLoc.add((float)x);
+          yLoc.add((float)y);
         }
         else {
           pixels[cur] = color(0);
+          
         }
       }
     }
@@ -295,4 +301,17 @@ void pause (int s) {
   int mili = millis();
   while (millis() < mili + 1000 * s) {
   }
+}
+
+float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
+  float[] ans = new float[2];
+  for (int h = 0; h < x.size(); h++) {
+    ans[0] += x.get(h);
+  }
+  for (int c = 0; c < y.size(); c++) {
+    ans[1] += y.get(c);
+  }
+  ans[0] = ans[0]/x.size();
+  ans[1] = ans[1]/y.size();
+  return ans;
 }
