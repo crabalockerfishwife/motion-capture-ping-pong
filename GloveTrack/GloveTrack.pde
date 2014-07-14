@@ -56,13 +56,8 @@ void draw() {
 }
 
 void fillBiggest() {
-  int max = 0;
-  for (int i =0; i < unique.size(); i++) {
-    if (unique.get(i) > max) {
-      max = unique.get(i);
-    }
-  }
-  int[] sizes = new int[ max ];
+
+  int[] sizes = new int[ unique.get( unique.size() -1) + 1];
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
       int cur = y*l+x;
@@ -71,7 +66,7 @@ void fillBiggest() {
         while( ((int)label.get(i)) != i ) {
           i = label.get(i);
         } 
-        sizes[(i-1)]++;
+        sizes[i]++;
       }
     }
   }
