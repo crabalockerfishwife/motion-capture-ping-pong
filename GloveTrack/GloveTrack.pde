@@ -39,7 +39,17 @@ void draw() {
   if (cam.available() == true) {
     cam.read();
   }
-  image(cam, 0, 0);
+  cam.loadPixels();
+  for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
+      for (int r = 0; r < cam.height; r++) {
+        int loc = (cam.width - c - 1) + r*cam.width;
+        int pixLoc = c + r*width;
+        color currColor = cam.pixels[loc]; 
+        pixels[pixLoc] = color(currColor);
+      }
+  }
+  updatePixels();
+  //image(cam, 0, 0);
   objects = new int[h][l];
   label = new ArrayList<Integer>();
   label.add(0);
@@ -55,11 +65,8 @@ void draw() {
   fillBiggest();
   findEdges();
   updatePixels();
-<<<<<<< HEAD
   //pause();
   println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
-=======
->>>>>>> 6e84a9c8ad111fe57616c8496b839d10fc56c40f
 }
 
 void fillBiggest() {
@@ -83,6 +90,8 @@ void fillBiggest() {
       biggest = i;
     }
   }
+  xLoc.clear();
+  yLoc.clear();
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) { 
       int cur = y*l+x;
