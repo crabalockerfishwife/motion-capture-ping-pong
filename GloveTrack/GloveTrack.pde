@@ -51,8 +51,9 @@ void draw() {
   findUnique();
   
   fillBiggest();
-  //findEdges();
+  findEdges();
   updatePixels();
+  pause();
 }
 
 void fillBiggest() {
@@ -85,7 +86,10 @@ void fillBiggest() {
           i = label.get(i);
         } 
         if (i == biggest) {
-          pixels[cur] = color(255,0,0);
+          pixels[cur] = color(255);
+        }
+        else {
+          pixels[cur] = color(0);
         }
       }
     }
@@ -174,6 +178,7 @@ void findEdges() {
   }
   */
   makeRect( edges );
+
 }
 
 void makeRect( int[][] coords ) {
@@ -284,4 +289,10 @@ int findMin( int a, int b, int c, int d ) {
   }
   
   return ret;
+}
+
+void pause (int s) {
+  int mili = millis();
+  while (millis() < mili + 1000 * s) {
+  }
 }
