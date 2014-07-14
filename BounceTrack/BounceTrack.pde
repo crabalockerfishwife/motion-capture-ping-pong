@@ -69,8 +69,8 @@ void draw()
   markBlobs();
   updatePixels();
   
-  markSeparate();
-  findUnique();
+  //markSeparate();
+  //findUnique();
   //markColors();
   updatePixels();
   findEdges();
