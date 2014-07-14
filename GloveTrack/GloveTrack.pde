@@ -53,7 +53,6 @@ void draw() {
   fillBiggest();
   findEdges();
   updatePixels();
-  pause();
 }
 
 void fillBiggest() {
