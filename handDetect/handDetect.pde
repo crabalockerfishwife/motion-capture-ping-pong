@@ -57,7 +57,7 @@ void draw() {
           }
         } 
         color currColor = video.pixels[loc]; 
-        pixels[pixLoc] = color(currColor);
+        pixels[pixLoc] = color(red(currColor), green(currColor), blue(currColor), 10);
         
       }
       updatePixels(); // Notify that the pixels[] array has changed

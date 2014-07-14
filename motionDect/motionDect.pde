@@ -49,12 +49,18 @@ void draw() {
   }
 }
 
-// When a key is pressed, capture the background image into the backgroundPixels
-// buffer, by copying each of the current frame's pixels into it.
-void keyPressed() {
-  if (look == false) {
-    loo
-    video.loadPixels();
-    arraycopy(video.pixels, backgroundPixels);
+
+float[] COG (float[] x, float[] y) {
+  float[] ans = new float[2];
+  for (int h = 0; h < x.length; x++) {
+    ans[0] += x[h];
   }
+  for (int c = 0; c < y.length; y++) {
+    ans[1] += y[c];
+  }
+  ans[0] = ans[0]/x.length;
+  ans[1] = ans[1]/y.length;
+  return ans;
 }
+
+
