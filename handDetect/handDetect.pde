@@ -1,4 +1,4 @@
-
+ 
 
 import processing.video.*;
 
@@ -82,27 +82,44 @@ float[] tabulation() {
   float red =0;
   float green =0;
   float blue =0;
-  float rGR;
-  float rGB;
-  float rBR;
+  float rGR =0;
+  float rGB =0;
+  float rBR =0;
   for (int r = 0; r < reds.size(); r++) {
     red += reds.get(r);
-    
+    rGR += ratGR.get(r);    
   }
-  red = red/reds.size();
+  rGR = rGR/ratGR.size();
   reds = new ArrayList<Float>();
+  ratGR = new ArrayList<Float>();
   for (int g = 0; g < greens.size(); g++) {
     green += greens.get(g);
+    rGB += ratGB.get(g);
   }
-  green = green/greens.size();
+  rGB = rGB/ratGB.size();
   greens = new ArrayList<Float>();
+  ratGB = new ArrayList<Float>();
   for (int b = 0; b < blues.size(); b++) {
     blue += blues.get(b);
+    rBR += ratBR.get(b);
   }
-  blue = blue/blues.size();
+  rBR = rBR/ratBR.size();
   blues = new ArrayList<Float>();
-  ans[0] = red;
-  ans[1] = green;
-  ans[2] = blue;
+  ratBR = new ArrayList<Float>();
+  ans[0] = rGR;
+  ans[1] = rGB;
+  ans[2] = rBR;
   return ans;
 } 
+
+
+boolean isHand(color c) {
+  float green = green(c);
+  float blue = blue(c);
+  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
