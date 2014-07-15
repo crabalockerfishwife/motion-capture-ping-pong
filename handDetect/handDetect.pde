@@ -57,7 +57,7 @@ void draw() {
           }
         } 
         color currColor = video.pixels[loc]; 
-        pixels[pixLoc] = color(red(currColor), green(currColor), blue(currColor), 10);
+        pixels[pixLoc] = color(currColor);
         
       }
       updatePixels(); // Notify that the pixels[] array has changed
@@ -123,3 +123,5 @@ boolean isHand(color c) {
     return false;
   }
 }
+
+
