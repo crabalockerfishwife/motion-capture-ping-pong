@@ -72,13 +72,12 @@ void draw() {
   //updatePixels();
 
   //pause();
-<<<<<<< HEAD
-  fill( 0, 255, 255);
-  ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 40, 40);
-=======
+
+  
+
   fill(0,255,255);
   ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
->>>>>>> FETCH_HEAD
+
 }
 
 void fillBiggest() {
@@ -147,7 +146,8 @@ void markBlobs() {
 boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
-  if ((green/blue < (0.6307366 + 0.15)) && (green/blue > (0.6307366 - 0.15))) {
+  float red = red(c);
+  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
   }
   else {
