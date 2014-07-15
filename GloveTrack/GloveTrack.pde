@@ -62,22 +62,24 @@ void draw() {
   
   loadPixels();
   markBlobs();
-  updatePixels();
+  //updatePixels();
   
   markSeparate();
   findUnique();
   
   fillBiggest();
   findEdges();
-  updatePixels();
+  //updatePixels();
 
   //pause();
-  println(COG(xLoc, yLoc)[0] + ", " + COG(xLoc, yLoc)[1]);
+  fill( 0, 255, 255);
+  ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 40, 40);
 }
 
 void fillBiggest() {
 
   int[] sizes = new int[ unique.get( unique.size() -1) + 1];
+  
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
       int cur = y*l+x;
