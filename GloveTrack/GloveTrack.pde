@@ -72,8 +72,13 @@ void draw() {
   //updatePixels();
 
   //pause();
+<<<<<<< HEAD
   fill( 0, 255, 255);
   ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 40, 40);
+=======
+  fill(0,255,255);
+  ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
+>>>>>>> FETCH_HEAD
 }
 
 void fillBiggest() {
