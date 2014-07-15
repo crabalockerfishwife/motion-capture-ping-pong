@@ -11,6 +11,9 @@ ArrayList<Integer> unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
+float[] COG = new float[2];
+float[][] oleCOG = new float[4][2];
+int frCo = 0;
 
 AudioPlayer audioPlayer;
 AudioPlayer hitSound;
@@ -292,7 +295,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
+  if (brightness(c)>100 && (green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
   }
   else {
@@ -477,16 +480,35 @@ void pause (int s) {
 
 float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   float[] ans = new float[2];
-  for (int h = 0; h < x.size(); h++) {
+  newCOG(x,y);
+  for (int h = 0; h < oleCOG.length; h++) {
+    ans[0] += oleCOG[h][0];
+    ans[1] += oleCOG[h][1];
+  }
+  ans[0] = ans[0]/oleCOG.length;
+  ans[1] = ans[1]/oleCOG.length;
+  return ans;
+}
+
+float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
+  if (frCo >= oleCOG.length) {
+    frCo = 0;
+  }
+  float[] ans = new float[2];
+  for (int h = 0; h < x.size (); h++) {
     ans[0] += x.get(h);
   }
-  for (int c = 0; c < y.size(); c++) {
+  for (int c = 0; c < y.size (); c++) {
     ans[1] += y.get(c);
   }
   ans[0] = ans[0]/x.size();
   ans[1] = ans[1]/y.size();
+  /*if ( (COG[0] > (-1.0 - 0.00001)) && (COG[0] < (-1.0 + 0.00001))) { 
+    COG = ans;
+  } else if (ans[0]*/
+  oleCOG[frCo] = ans; 
+  frCo++;
   return ans;
 }
-
 
 
