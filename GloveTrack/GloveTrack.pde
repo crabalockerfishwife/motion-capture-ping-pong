@@ -61,23 +61,41 @@ void draw() {
 
   loadPixels();
   markBlobs();
+<<<<<<< HEAD
   updatePixels();
 
+=======
+  //updatePixels();
+  
+>>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
   markSeparate();
   findUnique();
 
   fillBiggest();
   findEdges();
+<<<<<<< HEAD
   updatePixels();
   //pause();
   fill(0, 255, 255);
 
   ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 50, 50);
+=======
+  //updatePixels();
+
+  //pause();
+
+  
+
+  fill(0,255,255);
+  ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
+
+>>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
 }
 
 void fillBiggest() {
 
   int[] sizes = new int[ unique.get( unique.size() -1) + 1];
+  
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
       int cur = y*l+x;
@@ -135,7 +153,8 @@ void markBlobs() {
 boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
-  if ((green/blue < (0.6307366 + 0.15)) && (green/blue > (0.6307366 - 0.15))) {
+  float red = red(c);
+  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
   } else {
     return false;
