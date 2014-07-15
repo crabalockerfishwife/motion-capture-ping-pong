@@ -24,6 +24,7 @@ float xVel,yVel,zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
+int hitFrames=0;
 
 void setup(){
   l=640;
@@ -31,6 +32,8 @@ void setup(){
   size(l,h); 
   restart();
   highscore=0;
+  
+  ballZ=0.5;
   
   String[] cameras = Capture.list();
 
@@ -86,7 +89,7 @@ void draw(){
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
-  if(ballZ<=0.001){
+  if(ballZ<=0.5){
     zVel=abs(zVel);
   }
   if(ballZ>=1.1){
@@ -125,10 +128,16 @@ void draw(){
   }
   aveSize/=paddleSizes.size();
   //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
-  if(abs(paddleSizes.get(paddleSizes.size()-1)-aveSize)>abs(aveSize*1.1)){
+  //println((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize));
+  /*if((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize)>2){
+    hitFrames++;
+  }else{
+    hitFrames=0;
+  }
+  if(hitFrames>4)hit();*/
+  if(paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)){
+    //println(abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))+", "+abs(aveSize*0.2));
     hit();
-    //println("hit");
-    
   }
   ////////println("X: "+ballX+", Y: "+ballY);
 }
@@ -282,7 +291,8 @@ void markBlobs() {
 boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
-  if ((green/blue < (0.6307366 + 0.15)) && (green/blue > (0.6307366 - 0.15))) {
+  float red = red(c);
+  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
   }
   else {
