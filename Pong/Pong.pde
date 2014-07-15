@@ -23,6 +23,8 @@ float ballX,ballY,ballZ;
 float xVel,yVel,zVel;
 boolean dead=true;
 
+ArrayList<Float>paddleSizes=new ArrayList<Float>();
+
 void setup(){
   l=640;
   h=480;
@@ -34,7 +36,7 @@ void setup(){
 
   if (cameras == null) {
     ////println("Failed to retrieve the list of available cameras, will try the default...");
-    cam = new Capture(this, 640, 480);
+    cam = new Capture(this, l, h);
   } if (cameras.length == 0) {
     ////println("There are no cameras available for capture.");
     exit();
@@ -54,18 +56,19 @@ void setup(){
 }
 
 void draw(){
+  background(255);
   translate(width/2,height/2);
   camstuff();
   stroke(0);
   imageMode(CENTER);
-  tint(255,220);
+  tint(255,235);
   image(background,0,0,width,height);
   textSize(15);
   fill(0);
   text("Score: "+score,-280,-220);
   text("Highscore: "+highscore,100,-220);
   fill(255*ballZ);
-  if(ballZ>0.75)fill(0,255*ballZ,0);
+  if(ballZ>0.75 && zVel>0)fill(0,255*ballZ,0);
   ellipse(ballX*ballZ,ballY*ballZ,50*ballZ,50*ballZ);
   
   fill(255,128,128,20);
@@ -97,16 +100,16 @@ void draw(){
       highscore = score;
     }
   }
-  if(ballX<=width/-2){
+  if(ballX<=(width/-2)+25){
     xVel=abs(xVel);
   }
-  if(ballX>=width/2){
+  if(ballX>=(width/2)-25){
     xVel=abs(xVel)*-1;
   }
-  if(ballY<=height/-2){
+  if(ballY<=(height/-2)+25){
     yVel=abs(yVel);
   }
-  if(ballY>=height/2){
+  if(ballY>=(height/2)-25){
    yVel=abs(yVel)*-1; 
   }
   if (dead){
@@ -116,23 +119,25 @@ void draw(){
       }
     }
   }
-  
-  if(ballZ>0.75 && ballZ<1.1 && zVel>0){
-    if(handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50){
-      //////println("hit");
-      hitSound.play();
-      hitSound.rewind();
-      zVel=(0.4-ballZ)/100;
-      xVel+=(ballX-(handX-width/2))/10;
-      yVel+=(ballY-(handY-height/2))/10;
-      score++;
-    }
+  float aveSize=0;
+  for(Float f:paddleSizes){
+    aveSize+=f;
+  }
+  aveSize/=paddleSizes.size();
+  //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
+  if(abs(paddleSizes.get(paddleSizes.size()-1)-aveSize)>abs(aveSize*1.1)){
+    hit();
+    //println("hit");
+    
   }
   ////////println("X: "+ballX+", Y: "+ballY);
 }
 
-void mouseClicked(){
-  if(ballZ>0.75 && ballZ<1.1){
+void hit(){
+  fill(255,255,0,100);
+  rectMode(CENTER);
+  rect(handX-width/2,handY-height/2,50,50);
+  if(ballZ>0.75 && ballZ<1.1 && zVel>0){
     if(handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50){
       //////println("hit");
       hitSound.play();
@@ -196,14 +201,14 @@ void camstuff(){
   
   loadPixels();
   markBlobs();
-  updatePixels();
+  //updatePixels();
   
   markSeparate();
   findUnique();
   
   fillBiggest();
   findEdges();
-  updatePixels();
+  //updatePixels();
 
   //pause();
   //fill(0,255,255);
@@ -353,6 +358,8 @@ void makeRect( int[][] coords ) {
   noFill();
   stroke(255,0,0);
   rect( minX, minY, maxX - minX, maxY - minY );
+  paddleSizes.add(new Float((maxY-minX)*(maxY-minY)));
+  if(paddleSizes.size()>20)paddleSizes.remove(0);
   fill(255);
 }
 
