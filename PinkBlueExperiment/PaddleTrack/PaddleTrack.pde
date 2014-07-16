@@ -12,8 +12,6 @@ float[] COG = new float[2];
 float[][] oleCOG = new float[4][2];
 int frCo = 0;
 
-//int[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
-int[][] matrix = {{1,1,1},{1,0,1},{1,1,1}};
 void setup() {
   l = 640;
   h = 480;
@@ -52,28 +50,6 @@ void draw() {
       int pixLoc = c + r*width;
       color currColor = cam.pixels[loc]; 
       pixels[pixLoc] = color(currColor);
-      
-    }
-  }
-  updatePixels();
-  loadPixels();
-  for (int c = 1; c < cam.width-1; c++) { // For each pixel in the cam frame...
-    for (int r = 1; r < cam.height-1; r++) {
-      int loc = c + r*width;
-      /*color[][] cols = new color[matrix.length][matrix[0].length];
-      for (int x = c-1; x <= c+1; x++) {
-        for(int y = r-1; y <= r+1; y++) {
-          int pla = x + y*width;
-          /*if (((y + 1) - r) == -1) {
-            println(y);
-            println(r);
-          }
-          else { println("shit");}
-          cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
-        }
-      }*/
-      color neCo = convolve(matrix, c - 1, r - 1);
-      pixels[loc] = neCo;
     }
   }
   updatePixels();
@@ -87,18 +63,22 @@ void draw() {
   markBlobs();
 
   //updatePixels();
+
+
+  //updatePixels();
   
   markSeparate();
   findUnique();
 
   fillBiggest();
   findEdges();
-
+//<<<<<<< HEAD
   //updatePixels();
   //pause();
   fill(0, 255, 255);
 
   ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 50, 50);
+//=======
   //updatePixels();
 
   //pause();
@@ -108,6 +88,7 @@ void draw() {
   fill(0,255,255);
   ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
 
+//>>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
 }
 
 void fillBiggest() {
@@ -172,7 +153,9 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
+  boolean pink= (green/red>0.15 && green/red<0.5 && green/blue>0.45 && green/blue<0.75 && blue/red>0.25 && blue/red<0.5);
+  boolean blueish= (green/red>2 && green/red<3.5 && green/blue>0.75 && green/blue<1 && blue/red>2.25 && blue/red<3.75);
+  if(pink || blueish){
     return true;
   } else {
     return false;
@@ -388,47 +371,6 @@ float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   ans[0] = ans[0]/oleCOG.length;
   ans[1] = ans[1]/oleCOG.length;
   return ans;
-}
-
-/*
-//matrix and pixs are the same dimensions
-color convolve (int[][] matrix, color[][] pixs) {
-  float red =0;
-  float green =0;
-  float blue =0;
-  int sum =0;
-  for(int c = 0; c < matrix.length; c++) {
-    for (int h = 0; h < matrix[c].length; h++) {
-      red += (red(pixs[c][h]) * matrix[c][h]);
-      green += (green(pixs[c][h]) * matrix[c][h]);
-      blue += (blue(pixs[c][h]) * matrix[c][h]);
-      sum += matrix[c][h];
-    }
-  }
-  red /= sum;
-  green /= sum;
-  blue /= sum;
-  return color(red,green,blue);
-} */
-
-color convolve (int[][] matrix, int x, int y) {
-  float red =0;
-  float green =0;
-  float blue =0;
-  int sum =0;
-  for(int c = 0; c < matrix.length; c++) {
-    for (int h = 0; h < matrix[c].length; h++) {
-      int loc = (x + c) + (y + h)*width;
-      red += (red(pixels[loc]) * matrix[c][h]);
-      green += (green(pixels[loc]) * matrix[c][h]);
-      blue += (blue(pixels[loc]) * matrix[c][h]);
-      sum += matrix[c][h];
-    }
-  }
-  red /= sum;
-  green /= sum;
-  blue /= sum;
-  return color(red,green,blue);
 }
   
 
