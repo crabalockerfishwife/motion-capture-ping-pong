@@ -61,25 +61,24 @@ void draw() {
 
   loadPixels();
   markBlobs();
-<<<<<<< HEAD
-  updatePixels();
 
-=======
+  //updatePixels();
+
+
   //updatePixels();
   
->>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
   markSeparate();
   findUnique();
 
   fillBiggest();
   findEdges();
-<<<<<<< HEAD
-  updatePixels();
+//<<<<<<< HEAD
+  //updatePixels();
   //pause();
   fill(0, 255, 255);
 
   ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 50, 50);
-=======
+//=======
   //updatePixels();
 
   //pause();
@@ -89,7 +88,7 @@ void draw() {
   fill(0,255,255);
   ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
 
->>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
+//>>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
 }
 
 void fillBiggest() {
