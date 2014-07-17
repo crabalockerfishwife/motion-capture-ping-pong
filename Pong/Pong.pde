@@ -1,19 +1,23 @@
 import ddf.minim.*;
 import processing.video.*;
 
-float handX,handY;
+float handX, handY;
 
 Capture cam;
 int[][] objects;
-int l,h;
+int l, h;
 ArrayList<Integer> label;
 ArrayList<Integer> unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
 float[] COG = new float[2];
-float[][] oleCOG = new float[4][2];
+float[][] oleCOG = new float[3][2];
 int frCo = 0;
+
+//float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
+//float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
+float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 
 AudioPlayer audioPlayer;
 AudioPlayer hitSound;
@@ -21,29 +25,30 @@ Minim minim;
 Minim hitMinim;
 
 PImage background;
-float score,highscore;
-float ballX,ballY,ballZ;
-float xVel,yVel,zVel;
+float score, highscore;
+float ballX, ballY, ballZ;
+float xVel, yVel, zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
 int hitFrames=0;
 
-void setup(){
+void setup() {
   l=640;
   h=480;
-  size(l,h); 
+  size(l, h); 
   restart();
   highscore=0;
-  
+
   ballZ=0.5;
-  
+
   String[] cameras = Capture.list();
 
   if (cameras == null) {
     ////println("Failed to retrieve the list of available cameras, will try the default...");
     cam = new Capture(this, l, h);
-  } if (cameras.length == 0) {
+  } 
+  if (cameras.length == 0) {
     ////println("There are no cameras available for capture.");
     exit();
   } else {
@@ -51,9 +56,9 @@ void setup(){
     for (int i = 0; i < cameras.length; i++) {
       ////println(cameras[i]);
     }
-    
+
     cam = new Capture(this, cameras[0]);
-    
+
     cam.start();
   }
   label = new ArrayList<Integer>();
@@ -61,96 +66,96 @@ void setup(){
   unique = new ArrayList<Integer>();
 }
 
-void draw(){
+void draw() {
   background(255);
-  translate(width/2,height/2);
+  translate(width/2, height/2);
   camstuff();
   stroke(0);
   imageMode(CENTER);
-  tint(255,235);
-  image(background,0,0,width,height);
+  tint(255, 235);
+  image(background, 0, 0, width, height);
   textSize(15);
   fill(0);
-  text("Score: "+score,-280,-220);
-  text("Highscore: "+highscore,100,-220);
+  text("Score: "+score, -280, -220);
+  text("Highscore: "+highscore, 100, -220);
   fill(255*ballZ);
-  if(ballZ>0.75 && zVel>0)fill(0,255*ballZ,0);
-  ellipse(ballX*ballZ,ballY*ballZ,50*ballZ,50*ballZ);
-  
-  fill(255,128,128,20);
-  ellipse(ballX,ballY,50,50); //A projection of where the paddle needs to be to hit the ball.
-  
-  fill(150,50,25,100);
+  if (ballZ>0.75 && zVel>0)fill(0, 255*ballZ, 0);
+  ellipse(ballX*ballZ, ballY*ballZ, 50*ballZ, 50*ballZ);
+
+  fill(255, 128, 128, 20);
+  ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
+
+  fill(150, 50, 25, 100);
   rectMode(CENTER);
-  rect(handX-width/2,handY-height/2,50,50);
+  rect(handX-width/2, handY-height/2, 50, 50);
   //////println(handX);
-  if(mousePressed){
-    fill(255,255,0,100);
+  if (mousePressed) {
+    fill(255, 255, 0, 100);
     rectMode(CENTER);
-    rect(handX-width/2,handY-height/2,50,50);
+    rect(handX-width/2, handY-height/2, 50, 50);
   }
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
-  if(ballZ<=0.5){
+  if (ballZ<=0.5) {
     zVel=abs(zVel);
   }
-  if(ballZ>=1.1){
+  if (ballZ>=1.1) {
     background(0);
-    fill(128,0,0);
+    fill(128, 0, 0);
     textSize(50);
-    text("GAME OVER\nScore: "+score,0,0);
+    text("GAME OVER\nScore: "+score, 0, 0);
     audioPlayer.pause();
     dead = true;
-    if (score>highscore){
+    if (score>highscore) {
       highscore = score;
     }
   }
-  if(ballX<=(width/-2)+25){
+  if (ballX<=(width/-2)+25) {
     xVel=abs(xVel);
   }
-  if(ballX>=(width/2)-25){
+  if (ballX>=(width/2)-25) {
     xVel=abs(xVel)*-1;
   }
-  if(ballY<=(height/-2)+25){
+  if (ballY<=(height/-2)+25) {
     yVel=abs(yVel);
   }
-  if(ballY>=(height/2)-25){
-   yVel=abs(yVel)*-1; 
+  if (ballY>=(height/2)-25) {
+    yVel=abs(yVel)*-1;
   }
-  if (dead){
-    if(keyPressed){
-      if (key==ENTER){
-      restart();
+  if (dead) {
+    if (keyPressed) {
+      if (key==ENTER) {
+        restart();
       }
     }
   }
   float aveSize=0;
-  for(Float f:paddleSizes){
+  for (Float f : paddleSizes) {
     aveSize+=f;
   }
   aveSize/=paddleSizes.size();
   //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
   //println((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize));
   /*if((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize)>2){
-    hitFrames++;
-  }else{
-    hitFrames=0;
-  }
-  if(hitFrames>4)hit();*/
-  if(paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)){
+   hitFrames++;
+   }else{
+   hitFrames=0;
+   }
+   if(hitFrames>4)hit();*/
+  if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
     //println(abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))+", "+abs(aveSize*0.2));
     hit();
   }
   ////////println("X: "+ballX+", Y: "+ballY);
 }
 
-void hit(){
-  fill(255,255,0,100);
+void hit() {
+  fill(255, 255, 0, 100);
   rectMode(CENTER);
-  rect(handX-width/2,handY-height/2,50,50);
-  if(ballZ>0.75 && ballZ<1.1 && zVel>0){
-    if(handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50){
+  rect(handX-width/2, handY-height/2, 50, 50);
+  if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
+    if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       //////println("hit");
       hitSound.play();
       hitSound.rewind();
@@ -159,12 +164,12 @@ void hit(){
       yVel+=(ballY-(handY-height/2))/10;
       score++;
     }
-  }else{
-      //score-=0.05;
-    }
+  } else {
+    //score-=0.05;
+  }
 }
 
-void setupScreen(){
+void setupScreen() {
   background=loadImage("Background.png");
   minim = new Minim(this);
   audioPlayer = minim.loadFile("Blob.mp3");
@@ -178,7 +183,7 @@ void setupScreen(){
   yVel=random(5)-2.5;
 }
 
-void restart(){
+void restart() {
   score=0;
   dead=false;
   setupScreen();
@@ -189,35 +194,39 @@ void restart(){
 //CAMSTUFF
 //CAMSTUFF BUFFER
 
-void camstuff(){
-    if (cam.available() == true) {
+void camstuff() {
+  if (cam.available() == true) {
     cam.read();
   }
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
-      for (int r = 0; r < cam.height; r++) {
-        int loc = (cam.width - c - 1) + r*cam.width;
-        int pixLoc = c + r*width;
-        color currColor = cam.pixels[loc]; 
-        pixels[pixLoc] = color(currColor);
-      }
+    for (int r = 0; r < cam.height; r++) {
+      int loc = (cam.width - c - 1) + r*cam.width;
+      int pixLoc = c + r*width;
+      color currColor = cam.pixels[loc]; 
+      pixels[pixLoc] = color(currColor);
+    }
   }
   updatePixels();
+  
+  
+  blur();
+  
   //image(cam, 0, 0);
   objects = new int[h][l];
 
-  
+
   label.clear();
   label.add(0);
   unique.clear();
-  
+
   loadPixels();
   markBlobs();
   //updatePixels();
-  
+
   markSeparate();
   findUnique();
-  
+
   fillBiggest();
   findEdges();
   //updatePixels();
@@ -225,8 +234,8 @@ void camstuff(){
   //pause();
   //fill(0,255,255);
   //ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
-  handX=COG(xLoc,yLoc)[0];
-  handY=COG(xLoc,yLoc)[1];
+  handX=COG(xLoc, yLoc)[0];
+  handY=COG(xLoc, yLoc)[1];
 }
 
 void fillBiggest() {
@@ -237,7 +246,7 @@ void fillBiggest() {
       int cur = y*l+x;
       if (objects[y][x] != 0) {
         int i = objects[y][x];
-        while( ((int)label.get(i)) != i ) {
+        while ( ( (int)label.get(i)) != i ) {
           i = label.get(i);
         } 
         sizes[i]++;
@@ -257,36 +266,31 @@ void fillBiggest() {
       int cur = y*l+x;
       if (objects[y][x] != 0) {
         int i = objects[y][x];
-        while( ((int)label.get(i)) != i ) {
+        while ( ( (int)label.get(i)) != i ) {
           i = label.get(i);
         } 
         if (i == biggest) {
           pixels[cur] = color(255);
           xLoc.add((float)x);
           yLoc.add((float)y);
-        }
-        else {
+        } else {
           pixels[cur] = color(0);
-          
         }
       }
     }
   }
-  
 }
-  
+
 void markBlobs() {
   for (int y = 0; y < h; y++) {
     for (int x = 0; x <l; x++) {
       if (isHand( pixels[y*l + x])) {
         pixels[ y * l + x ] = color(255);
         objects[y][x] = 255;
-      }
-      else {
+      } else {
         pixels[ y * l + x ] = color(0);
         objects[y][x] = 0;
       }
-        
     }
   }
 }
@@ -297,8 +301,7 @@ boolean isHand(color c) {
   float red = red(c);
   if (brightness(c)>100 && (green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }
@@ -306,58 +309,65 @@ boolean isHand(color c) {
 void findEdges() {
   edges = new int[4][2];
   // find top
-  A:for (int y = 0; y<h; y++) {
-    B: for (int x = 0; x < l; x++) {
-        if (pixels[ y*l + x] != color(0) ) {
-          edges[0][0] = y;
-          edges[0][1] = x;
-          break A;
-        }
+A:
+  for (int y = 0; y<h; y++) {
+B: 
+    for (int x = 0; x < l; x++) {
+      if (pixels[ y*l + x] != color(0) ) {
+        edges[0][0] = y;
+        edges[0][1] = x;
+        break A;
+      }
     }
   }
-  
+
   // find bottom
-  C: for (int y = h-1; y > -1; y--) {
-     D: for (int x = 0; x < l; x++) {
-        if (pixels[ y*l + x] != color(0) ) {
-          edges[1][0] = y;
-          edges[1][1] = x;
-          break C;
-        }
+C: 
+  for (int y = h-1; y > -1; y--) {
+D: 
+    for (int x = 0; x < l; x++) {
+      if (pixels[ y*l + x] != color(0) ) {
+        edges[1][0] = y;
+        edges[1][1] = x;
+        break C;
       }
+    }
   }
-  
-    // find left
-  E: for (int x = 0; x < l; x++) {
-     F: for (int y = 0; y < h; y++)  {
-        if (pixels[ y*l + x] != color(0) ) {
-          edges[2][0] = y;
-          edges[2][1] = x;
-          break E;
-        }
+
+  // find left
+E: 
+  for (int x = 0; x < l; x++) {
+F: 
+    for (int y = 0; y < h; y++) {
+      if (pixels[ y*l + x] != color(0) ) {
+        edges[2][0] = y;
+        edges[2][1] = x;
+        break E;
       }
+    }
   }
-  
+
   // right
-  G: for (int x = (l-1); x > -1; x--) {
-     H: for (int y = 0; y < h; y++)  {
-        if (pixels[ y*l + x] != color(0) ) {
-          edges[3][0] = y;
-          edges[3][1] = x;
-          break G;
-        }
+G: 
+  for (int x = (l-1); x > -1; x--) {
+H: 
+    for (int y = 0; y < h; y++) {
+      if (pixels[ y*l + x] != color(0) ) {
+        edges[3][0] = y;
+        edges[3][1] = x;
+        break G;
       }
+    }
   }
   /*
   ellipseMode(CENTER);
-  fill(255);
-  for (int i =0; i < edges.length; i++) {
-    ellipse( edges[i][1], edges[i][0], 10, 10);
-    ////println( edges[i][0] + " , " + edges[i][1] );
-  }
-  */
+   fill(255);
+   for (int i =0; i < edges.length; i++) {
+   ellipse( edges[i][1], edges[i][0], 10, 10);
+   ////println( edges[i][0] + " , " + edges[i][1] );
+   }
+   */
   makeRect( edges );
-
 }
 
 void makeRect( int[][] coords ) {
@@ -369,10 +379,10 @@ void makeRect( int[][] coords ) {
   minX = coords[2][1];
   rectMode(CORNER);
   noFill();
-  stroke(255,0,0);
+  stroke(255, 0, 0);
   rect( minX, minY, maxX - minX, maxY - minY );
   paddleSizes.add(new Float((maxY-minX)*(maxY-minY)));
-  if(paddleSizes.size()>20)paddleSizes.remove(0);
+  if (paddleSizes.size()>20)paddleSizes.remove(0);
   fill(255);
 }
 
@@ -382,18 +392,18 @@ void markSeparate() {
 
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
-      
+
       cur = y*l+x;
       int a = 0;
       int b = 0;
       int c = 0;
       int d = 0;
       if ( objects[y][x] == 255) {
-      
+
         if ( inBounds(y-1, x-1) ) {
           a = objects[y-1][x-1];
         }
-          
+
         if ( inBounds(y-1, x) ) {
           b= objects[y-1][x];
         }
@@ -407,23 +417,21 @@ void markSeparate() {
           objects[y][x] = cnt;
           label.add(cnt);
           cnt++;
-        }
-        else {
-          int min = findMin(a,b,c,d);
+        } else {
+          int min = findMin(a, b, c, d);
           objects[y][x] = min;
-          if (a!=0){
-            label.set( a, min ); 
-          }
-          if (b!=0){
-            label.set( b, min ); 
+          if (a!=0) {
+            label.set( a, min );
           }
           if (b!=0) {
-            label.set( b, min ); 
+            label.set( b, min );
           }
           if (b!=0) {
-            label.set( b, min ); 
+            label.set( b, min );
           }
-          
+          if (b!=0) {
+            label.set( b, min );
+          }
         }
       }
     }
@@ -435,20 +443,20 @@ boolean inBounds( int i, int j ) {
 }
 
 void findUnique() {
-  for (int i =0; i<label.size(); i++) {
+  for (int i =0; i<label.size (); i++) {
     if ( ((int)label.get(i)) == i ) {
       unique.add(i);
     }
   }
   /*
   //if (start) {
-    blobs = new color[ unique.size() ];
-    for (int i = 0; i < blobs.length; i++) {
-        blobs[i] = color( random(255), random(255), random(255 ) );
-    }
-    //start = false;
-  //}
-  */
+   blobs = new color[ unique.size() ];
+   for (int i = 0; i < blobs.length; i++) {
+   blobs[i] = color( random(255), random(255), random(255 ) );
+   }
+   //start = false;
+   //}
+   */
 }
 
 int findMin( int a, int b, int c, int d ) {
@@ -463,24 +471,24 @@ int findMin( int a, int b, int c, int d ) {
     cont.add(d);
 
   int ret = cont.get(0);
-  for (int i = 1; i < cont.size(); i++) {
+  for (int i = 1; i < cont.size (); i++) {
     if (cont.get(i) < ret) {
       ret = cont.get(i);
     }
   }
-  
+
   return ret;
 }
 
 void pause (int s) {
   int mili = millis();
-  while (millis() < mili + 1000 * s) {
+  while (millis () < mili + 1000 * s) {
   }
 }
 
 float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   float[] ans = new float[2];
-  newCOG(x,y);
+  newCOG(x, y);
   for (int h = 0; h < oleCOG.length; h++) {
     ans[0] += oleCOG[h][0];
     ans[1] += oleCOG[h][1];
@@ -504,11 +512,62 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
   ans[0] = ans[0]/x.size();
   ans[1] = ans[1]/y.size();
   /*if ( (COG[0] > (-1.0 - 0.00001)) && (COG[0] < (-1.0 + 0.00001))) { 
-    COG = ans;
-  } else if (ans[0]*/
+   COG = ans;
+   } else if (ans[0]*/
   oleCOG[frCo] = ans; 
   frCo++;
   return ans;
 }
+
+
+void blur() {
+  //if (toggle) {
+  loadPixels();
+
+  for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
+    for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
+      int loc = c + r*width;
+      /*color[][] cols = new color[matrix.length][matrix[0].length];
+       for (int x = c-1; x <= c+1; x++) {
+       for(int y = r-1; y <= r+1; y++) {
+       int pla = x + y*width;
+      /*if (((y + 1) - r) == -1) {
+       println(y);
+       println(r);
+       }
+       else { println("shit");}
+       cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
+       }
+       }*/
+      color neCo = convolve(matrix, c - (matrix.length - 1)/2, r - (matrix.length - 1)/2);
+      pixels[loc] = neCo;
+    }
+  }
+  updatePixels();
+  //}
+}
+
+
+color convolve (float[][] matrix, int x, int y) {
+  float red =0;
+  float green =0;
+  float blue =0;
+  float sum =0;
+  for(int c = 0; c < matrix.length; c++) {
+    for (int h = 0; h < matrix[c].length; h++) {
+      int loc = (x + c) + (y + h)*width;
+      red += (red(pixels[loc]) * matrix[c][h]);
+      green += (green(pixels[loc]) * matrix[c][h]);
+      blue += (blue(pixels[loc]) * matrix[c][h]);
+      sum += matrix[c][h];
+    }
+  }
+  red /= sum;
+  green /= sum;
+  blue /= sum;
+  return color(red,green,blue);
+}
+
+
 
 
