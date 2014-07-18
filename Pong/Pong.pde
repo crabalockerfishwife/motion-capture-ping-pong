@@ -15,6 +15,18 @@ float[] COG = new float[2];
 float[][] oleCOG = new float[3][2];
 int frCo = 0;
 
+color topLeft;
+boolean game=false;
+ArrayList<Float>allGR = new ArrayList<Float>();
+ArrayList<Float>allGB = new ArrayList<Float>();
+ArrayList<Float>allBR = new ArrayList<Float>();
+ArrayList<Float>allGreen = new ArrayList<Float>();
+ArrayList<Float>allBlue = new ArrayList<Float>();
+ArrayList<Float>allRed = new ArrayList<Float>();
+boolean capture=false;
+float minGR,maxGR,minGB,maxGB,minBR,maxBR;
+float aveGR,aveGB,aveBR;
+
 //float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
 //float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
@@ -66,7 +78,99 @@ void setup() {
   unique = new ArrayList<Integer>();
 }
 
-void draw() {
+void draw(){
+ if(game)game(); 
+ else calibrate();
+ 
+ if(allGR.size()>=100){
+   float minGreen=allGreen.get(0);
+   float maxGreen=allGreen.get(0);
+   float minBlue=allBlue.get(0);
+   float maxBlue=allBlue.get(0);
+   float minRed=allRed.get(0);
+   float maxRed=allRed.get(0);
+   
+   float aveGreen=0;
+   float aveBlue=0;
+   float aveRed=0;
+   
+   for(Float f:allGreen){
+     aveGreen+=f;
+     if(minGreen>f)minGreen=f; 
+     if(maxGreen<f)maxGreen=f;
+   }
+   for(Float f:allBlue){
+     aveBlue+=f;
+     if(minBlue>f)minBlue=f; 
+     if(maxBlue<f)maxBlue=f;
+   }
+   for(Float f:allRed){
+     aveRed+=f;
+     if(minRed>f)minRed=f; 
+     if(maxRed<f)maxRed=f;
+   }
+   
+   aveGreen/=allGreen.size();
+   aveBlue/=allBlue.size();
+   aveRed/=allRed.size();
+   
+   minBlue+=(aveBlue-minBlue)/10;
+   maxBlue+=(aveBlue-maxBlue)/10;
+   minGreen+=(aveGreen-minGreen)/10;
+   maxGreen+=(aveGreen-maxGreen)/10;
+   minRed+=(aveRed-minRed)/10;
+   maxRed+=(aveRed-maxRed)/10;
+   
+   minGB=minGreen/maxBlue;
+   maxGB=maxGreen/minBlue;
+   minGR=minGreen/maxRed;
+   maxGR=maxGreen/minRed;
+   minBR=minBlue/maxRed;
+   maxBR=maxBlue/minRed;
+   
+   println(minBR+", "+maxBR);
+   game=true;
+ }
+}
+
+void calibrate(){
+  if (cam.available() == true) {
+    cam.read();
+  }
+  cam.loadPixels();
+  for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
+    for (int r = 0; r < cam.height; r++) {
+      int loc = (cam.width - c - 1) + r*cam.width;
+      int pixLoc = c + r*width;
+      color currColor = cam.pixels[loc]; 
+      pixels[pixLoc] = color(currColor);
+    }
+  }
+  updatePixels();
+  loadPixels();
+  topLeft=color(pixels[0]);
+  //println(red(topLeft)+", "+green(topLeft)+", "+blue(topLeft)); 
+  fill(255);
+  textSize(20);
+  if(!capture){
+    text("Hold paddle at top left corner of screen, and press spacebar.",0,height-50); 
+  }
+  else{
+    text("Capturing...",width/2-50,height-50);
+    allGR.add(green(topLeft)/red(topLeft));
+    allBR.add(blue(topLeft)/red(topLeft));
+    allGB.add(green(topLeft)/blue(topLeft));
+    allGreen.add(green(topLeft));
+    allBlue.add(blue(topLeft));
+    allRed.add(red(topLeft));
+  }
+  
+  if(keyPressed && key==' '){
+   capture=true; 
+  }
+}
+
+void game() {
   background(255);
   translate(width/2, height/2);
   camstuff();
@@ -299,7 +403,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if (brightness(c)>100 && (green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
+  if (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) ) {
     return true;
   } else {
     return false;
@@ -426,14 +530,11 @@ void markSeparate() {
           if (b!=0) {
             label.set( b, min );
           }
-<<<<<<< HEAD
           if (c!=0) {
             label.set( c, min ); 
           }
           if (d!=0) {
             label.set( d, min ); 
-=======
->>>>>>> FETCH_HEAD
           }
         }
       }
@@ -570,7 +671,3 @@ color convolve (float[][] matrix, int x, int y) {
   blue /= sum;
   return color(red,green,blue);
 }
-
-
-
-
