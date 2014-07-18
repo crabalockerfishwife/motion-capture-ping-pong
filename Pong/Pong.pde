@@ -417,11 +417,11 @@ void markSeparate() {
           if (b!=0){
             label.set( b, min ); 
           }
-          if (b!=0) {
-            label.set( b, min ); 
+          if (c!=0) {
+            label.set( c, min ); 
           }
-          if (b!=0) {
-            label.set( b, min ); 
+          if (d!=0) {
+            label.set( d, min ); 
           }
           
         }
