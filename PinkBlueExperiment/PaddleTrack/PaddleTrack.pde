@@ -12,11 +12,6 @@ float[] COG = new float[2];
 float[][] oleCOG = new float[4][2];
 int frCo = 0;
 
-boolean toggle = false;
-
-//float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
-//float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
-float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 void setup() {
   l = 640;
   h = 480;
@@ -48,8 +43,6 @@ void draw() {
   if (cam.available() == true) {
     cam.read();
   }
-  println(width);
-  //cam.resize((width/2),0);
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -57,14 +50,9 @@ void draw() {
       int pixLoc = c + r*width;
       color currColor = cam.pixels[loc]; 
       pixels[pixLoc] = color(currColor);
-      
     }
   }
   updatePixels();
-  
-  blur();
-  //blur();
-  
   //image(cam, 0, 0);
   objects = new int[h][l];
   label = new ArrayList<Integer>();
@@ -75,18 +63,22 @@ void draw() {
   markBlobs();
 
   //updatePixels();
+
+
+  //updatePixels();
   
   markSeparate();
   findUnique();
 
   fillBiggest();
   findEdges();
-
+//<<<<<<< HEAD
   //updatePixels();
   //pause();
   fill(0, 255, 255);
 
   ellipse(COG(xLoc, yLoc)[0], COG(xLoc, yLoc)[1], 50, 50);
+//=======
   //updatePixels();
 
   //pause();
@@ -96,34 +88,7 @@ void draw() {
   fill(0,255,255);
   ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
 
-}
-
-
-void blur() {
-  if (toggle) {
-    loadPixels();
-    
-    for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
-      for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
-        int loc = c + r*width;
-        /*color[][] cols = new color[matrix.length][matrix[0].length];
-        for (int x = c-1; x <= c+1; x++) {
-          for(int y = r-1; y <= r+1; y++) {
-            int pla = x + y*width;
-            /*if (((y + 1) - r) == -1) {
-              println(y);
-              println(r);
-            }
-            else { println("shit");}
-            cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
-          }
-        }*/
-        color neCo = convolve(matrix, c - (matrix.length - 1)/2, r - (matrix.length - 1)/2);
-        pixels[loc] = neCo;
-      }
-    }
-    updatePixels();
-  }
+//>>>>>>> 272f69b82dcb6563deaceea8152158860d9bcaf4
 }
 
 void fillBiggest() {
@@ -188,7 +153,9 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if ((green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
+  boolean pink= (green/red>0.15 && green/red<0.5 && green/blue>0.45 && green/blue<0.75 && blue/red>0.25 && blue/red<0.5);
+  boolean blueish= (green/red>2 && green/red<3.5 && green/blue>0.75 && green/blue<1 && blue/red>2.25 && blue/red<3.75);
+  if(pink || blueish){
     return true;
   } else {
     return false;
@@ -313,11 +280,11 @@ void markSeparate() {
           if (b!=0) {
             label.set( b, min );
           }
-          if (c!=0) {
-            label.set( c, min );
+          if (b!=0) {
+            label.set( b, min );
           }
-          if (d!=0) {
-            label.set( d, min );
+          if (b!=0) {
+            label.set( b, min );
           }
         }
       }
@@ -405,51 +372,5 @@ float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   ans[1] = ans[1]/oleCOG.length;
   return ans;
 }
-
-/*
-//matrix and pixs are the same dimensions
-color convolve (int[][] matrix, color[][] pixs) {
-  float red =0;
-  float green =0;
-  float blue =0;
-  int sum =0;
-  for(int c = 0; c < matrix.length; c++) {
-    for (int h = 0; h < matrix[c].length; h++) {
-      red += (red(pixs[c][h]) * matrix[c][h]);
-      green += (green(pixs[c][h]) * matrix[c][h]);
-      blue += (blue(pixs[c][h]) * matrix[c][h]);
-      sum += matrix[c][h];
-    }
-  }
-  red /= sum;
-  green /= sum;
-  blue /= sum;
-  return color(red,green,blue);
-} */
-
-color convolve (float[][] matrix, int x, int y) {
-  float red =0;
-  float green =0;
-  float blue =0;
-  float sum =0;
-  for(int c = 0; c < matrix.length; c++) {
-    for (int h = 0; h < matrix[c].length; h++) {
-      int loc = (x + c) + (y + h)*width;
-      red += (red(pixels[loc]) * matrix[c][h]);
-      green += (green(pixels[loc]) * matrix[c][h]);
-      blue += (blue(pixels[loc]) * matrix[c][h]);
-      sum += matrix[c][h];
-    }
-  }
-  red /= sum;
-  green /= sum;
-  blue /= sum;
-  return color(red,green,blue);
-}
-
-void keyPressed() {
-  toggle = !toggle;
-}
-  
   
 
