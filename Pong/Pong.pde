@@ -433,11 +433,6 @@ void markSeparate() {
           if (d!=0) {
             label.set( d, min ); 
 =======
-          if (b!=0) {
-            label.set( b, min );
-          }
-          if (b!=0) {
-            label.set( b, min );
 >>>>>>> FETCH_HEAD
           }
         }
