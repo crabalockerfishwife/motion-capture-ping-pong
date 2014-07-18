@@ -27,6 +27,8 @@ boolean capture=false;
 float minGR,maxGR,minGB,maxGB,minBR,maxBR;
 float aveGR,aveGB,aveBR;
 
+float padR,padG,padB;
+
 //float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
 //float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
@@ -114,10 +116,14 @@ void draw(){
    aveBlue/=allBlue.size();
    aveRed/=allRed.size();
    
+   padR=aveRed;
+   padG=aveGreen;
+   padB=aveBlue;
+   
    minBlue+=(aveBlue-minBlue)/10;
    maxBlue+=(aveBlue-maxBlue)/10;
    minGreen+=(aveGreen-minGreen)/10;
-   maxGreen+=(aveGreen-maxGreen)/10;
+   maxGreen+=(aveGreen-maxGreen)/10; 
    minRed+=(aveRed-minRed)/10;
    maxRed+=(aveRed-maxRed)/10;
    
@@ -128,7 +134,7 @@ void draw(){
    minBR=minBlue/maxRed;
    maxBR=maxBlue/minRed;
    
-   println(minBR+", "+maxBR);
+   //println(minBR+", "+maxBR);
    game=true;
  }
 }
@@ -189,15 +195,15 @@ void game() {
   fill(255, 128, 128, 20);
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
-  fill(150, 50, 25, 100);
+  fill(padR, padG, padB*0, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
   //////println(handX);
-  if (mousePressed) {
+  /*if (mousePressed) {
     fill(255, 255, 0, 100);
     rectMode(CENTER);
     rect(handX-width/2, handY-height/2, 50, 50);
-  }
+  }*/
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
@@ -255,7 +261,7 @@ void game() {
 }
 
 void hit() {
-  fill(255, 255, 0, 100);
+  fill(padR*2, padG*2, padB*2, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
@@ -263,7 +269,7 @@ void hit() {
       //////println("hit");
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.7-ballZ)/100;
+      zVel=(0.55-ballZ)/100;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
@@ -282,7 +288,7 @@ void setupScreen() {
   audioPlayer.play();
   audioPlayer.loop();
   ballZ=0.01;
-  zVel=0.005;
+  zVel=0.01;
   xVel=random(5)-2.5;
   yVel=random(5)-2.5;
 }
