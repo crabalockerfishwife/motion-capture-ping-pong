@@ -24,6 +24,7 @@ ArrayList<Float>allGreen = new ArrayList<Float>();
 ArrayList<Float>allBlue = new ArrayList<Float>();
 ArrayList<Float>allRed = new ArrayList<Float>();
 boolean capture=false;
+boolean musicstarted=false;
 float minGR,maxGR,minGB,maxGB,minBR,maxBR;
 float aveGR,aveGB,aveBR;
 
@@ -54,6 +55,11 @@ void setup() {
   restart();
   highscore=0;
 
+  minim = new Minim(this);
+  audioPlayer = minim.loadFile("Tomato.mp3");
+  hitMinim = new Minim(this);
+  hitSound = hitMinim.loadFile("Hit.mp3");
+  
   ballZ=0.5;
 
   String[] cameras = Capture.list();
@@ -81,7 +87,14 @@ void setup() {
 }
 
 void draw(){
- if(game)game(); 
+ if(game){
+   game();
+   if(!musicstarted){
+     audioPlayer.play();
+     audioPlayer.loop(); 
+     musicstarted=true;
+   }
+ }
  else calibrate();
  
  if(allGR.size()>=100){
@@ -155,11 +168,18 @@ void calibrate(){
   updatePixels();
   loadPixels();
   topLeft=color(pixels[0]);
+  //pixels[pixels.length/2]=color(255,0,0);
   //println(red(topLeft)+", "+green(topLeft)+", "+blue(topLeft)); 
+  //stroke(255);
+  //strokeWeight(3);
+  //fill(255,125);
+  //noFill();
+  //rect(width/2-25,height/2-25,50,50);
+  //strokeWeight(1);
   fill(255);
   textSize(20);
   if(!capture){
-    text("Hold paddle at top left corner of screen, and press spacebar.",0,height-50); 
+    text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
   }
   else{
     text("Capturing...",width/2-50,height-50);
@@ -216,6 +236,7 @@ void game() {
     textSize(50);
     text("GAME OVER\nScore: "+score, 0, 0);
     audioPlayer.pause();
+    musicstarted=false;
     dead = true;
     if (score>highscore) {
       highscore = score;
@@ -269,7 +290,7 @@ void hit() {
       //////println("hit");
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.55-ballZ)/100;
+      zVel=(0.7-ballZ)/100-score/1000;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
@@ -281,12 +302,6 @@ void hit() {
 
 void setupScreen() {
   background=loadImage("Background.png");
-  minim = new Minim(this);
-  audioPlayer = minim.loadFile("Blob.mp3");
-  hitMinim = new Minim(this);
-  hitSound = hitMinim.loadFile("Hit.mp3");
-  audioPlayer.play();
-  audioPlayer.loop();
   ballZ=0.01;
   zVel=0.01;
   xVel=random(5)-2.5;
