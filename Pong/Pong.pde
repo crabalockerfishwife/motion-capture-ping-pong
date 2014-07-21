@@ -17,6 +17,21 @@ float[] COG = new float[2];
 float[][] oleCOG = new float[3][2];
 int frCo = 0;
 
+color topLeft;
+boolean game=false;
+ArrayList<Float>allGR = new ArrayList<Float>();
+ArrayList<Float>allGB = new ArrayList<Float>();
+ArrayList<Float>allBR = new ArrayList<Float>();
+ArrayList<Float>allGreen = new ArrayList<Float>();
+ArrayList<Float>allBlue = new ArrayList<Float>();
+ArrayList<Float>allRed = new ArrayList<Float>();
+boolean capture=false;
+boolean musicstarted=false;
+float minGR,maxGR,minGB,maxGB,minBR,maxBR;
+float aveGR,aveGB,aveBR;
+
+float padR,padG,padB;
+
 //float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
 //float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
@@ -42,6 +57,11 @@ void setup() {
   restart();
   highscore=0;
 
+  minim = new Minim(this);
+  audioPlayer = minim.loadFile("Tomato.mp3");
+  hitMinim = new Minim(this);
+  hitSound = hitMinim.loadFile("Hit.mp3");
+  
   ballZ=0.5;
 
   String[] cameras = Capture.list();
@@ -68,7 +88,117 @@ void setup() {
   unique = new ArrayList<Integer>();
 }
 
-void draw() {
+void draw(){
+ if(game){
+   game();
+   if(!musicstarted){
+     audioPlayer.play();
+     audioPlayer.loop(); 
+     musicstarted=true;
+   }
+ }
+ else calibrate();
+ 
+ if(allGR.size()>=100){
+   float minGreen=allGreen.get(0);
+   float maxGreen=allGreen.get(0);
+   float minBlue=allBlue.get(0);
+   float maxBlue=allBlue.get(0);
+   float minRed=allRed.get(0);
+   float maxRed=allRed.get(0);
+   
+   float aveGreen=0;
+   float aveBlue=0;
+   float aveRed=0;
+   
+   for(Float f:allGreen){
+     aveGreen+=f;
+     if(minGreen>f)minGreen=f; 
+     if(maxGreen<f)maxGreen=f;
+   }
+   for(Float f:allBlue){
+     aveBlue+=f;
+     if(minBlue>f)minBlue=f; 
+     if(maxBlue<f)maxBlue=f;
+   }
+   for(Float f:allRed){
+     aveRed+=f;
+     if(minRed>f)minRed=f; 
+     if(maxRed<f)maxRed=f;
+   }
+   
+   aveGreen/=allGreen.size();
+   aveBlue/=allBlue.size();
+   aveRed/=allRed.size();
+   
+   padR=aveRed;
+   padG=aveGreen;
+   padB=aveBlue;
+   
+   minBlue+=(aveBlue-minBlue)/10;
+   maxBlue+=(aveBlue-maxBlue)/10;
+   minGreen+=(aveGreen-minGreen)/10;
+   maxGreen+=(aveGreen-maxGreen)/10; 
+   minRed+=(aveRed-minRed)/10;
+   maxRed+=(aveRed-maxRed)/10;
+   
+   minGB=minGreen/maxBlue;
+   maxGB=maxGreen/minBlue;
+   minGR=minGreen/maxRed;
+   maxGR=maxGreen/minRed;
+   minBR=minBlue/maxRed;
+   maxBR=maxBlue/minRed;
+   
+   //println(minBR+", "+maxBR);
+   game=true;
+ }
+}
+
+void calibrate(){
+  if (cam.available() == true) {
+    cam.read();
+  }
+  cam.loadPixels();
+  for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
+    for (int r = 0; r < cam.height; r++) {
+      int loc = (cam.width - c - 1) + r*cam.width;
+      int pixLoc = c + r*width;
+      color currColor = cam.pixels[loc]; 
+      pixels[pixLoc] = color(currColor);
+    }
+  }
+  updatePixels();
+  loadPixels();
+  topLeft=color(pixels[0]);
+  //pixels[pixels.length/2]=color(255,0,0);
+  //println(red(topLeft)+", "+green(topLeft)+", "+blue(topLeft)); 
+  //stroke(255);
+  //strokeWeight(3);
+  //fill(255,125);
+  //noFill();
+  //rect(width/2-25,height/2-25,50,50);
+  //strokeWeight(1);
+  fill(255);
+  textSize(20);
+  if(!capture){
+    text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
+  }
+  else{
+    text("Capturing...",width/2-50,height-50);
+    allGR.add(green(topLeft)/red(topLeft));
+    allBR.add(blue(topLeft)/red(topLeft));
+    allGB.add(green(topLeft)/blue(topLeft));
+    allGreen.add(green(topLeft));
+    allBlue.add(blue(topLeft));
+    allRed.add(red(topLeft));
+  }
+  
+  if(keyPressed && key==' '){
+   capture=true; 
+  }
+}
+
+void game() {
   background(255);
   translate(width/2, height/2);
   camstuff();
@@ -87,15 +217,15 @@ void draw() {
   fill(255, 128, 128, 20);
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
-  fill(150, 50, 25, 100);
+  fill(padR, padG, padB*0, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
   //////println(handX);
-  if (mousePressed) {
+  /*if (mousePressed) {
     fill(255, 255, 0, 100);
     rectMode(CENTER);
     rect(handX-width/2, handY-height/2, 50, 50);
-  }
+  }*/
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
@@ -108,6 +238,7 @@ void draw() {
     textSize(50);
     text("GAME OVER\nScore: "+score, 0, 0);
     audioPlayer.pause();
+    musicstarted=false;
     dead = true;
     if (score>highscore) {
       highscore = score;
@@ -153,7 +284,7 @@ void draw() {
 }
 
 void hit() {
-  fill(255, 255, 0, 100);
+  fill(padR*2, padG*2, padB*2, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
@@ -161,7 +292,7 @@ void hit() {
       //////println("hit");
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.7-ballZ)/100;
+      zVel=(0.7-ballZ)/100-score/1000;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
@@ -173,14 +304,8 @@ void hit() {
 
 void setupScreen() {
   background=loadImage("Background.png");
-  minim = new Minim(this);
-  audioPlayer = minim.loadFile("Blob.mp3");
-  hitMinim = new Minim(this);
-  hitSound = hitMinim.loadFile("Hit.mp3");
-  audioPlayer.play();
-  audioPlayer.loop();
   ballZ=0.01;
-  zVel=0.005;
+  zVel=0.01;
   xVel=random(5)-2.5;
   yVel=random(5)-2.5;
 }
@@ -301,7 +426,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if (brightness(c)>100 && (green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
+  if (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) ) {
     return true;
   } else {
     return false;
@@ -569,7 +694,3 @@ color convolve (float[][] matrix, int x, int y) {
   blue /= sum;
   return color(red,green,blue);
 }
-
-
-
-
