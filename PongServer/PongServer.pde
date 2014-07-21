@@ -17,6 +17,23 @@ ArrayList<Integer> unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
+float[] COG = new float[2];
+float[][] oleCOG = new float[3][2];
+int frCo = 0;
+
+//float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
+//float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
+float[][] matrix = {
+  {
+    1, 1, 1
+  }
+  , {
+    1, 1, 1
+  }
+  , {
+    1, 1, 1
+  }
+};
 
 AudioPlayer audioPlayer;
 AudioPlayer hitSound;
@@ -29,6 +46,12 @@ float ballX, ballY, ballZ;
 float xVel, yVel, zVel;
 boolean dead=true;
 
+ArrayList<Float>paddleSizes=new ArrayList<Float>();
+int hitFrames=0;
+
+
+
+
 void setup() {
   l=640;
   h=480;
@@ -36,14 +59,16 @@ void setup() {
   restart();
   highscore=0;
 
-  server = new Server(this, 5204);
+  ballZ=0.5;
+
+  server = new Server(this, 6204);
   f = createFont("Arial", 18, true);
 
   String[] cameras = Capture.list();
 
   if (cameras == null) {
     ////println("Failed to retrieve the list of available cameras, will try the default...");
-    cam = new Capture(this, 640, 480);
+    cam = new Capture(this, l, h);
   } 
   if (cameras.length == 0) {
     ////println("There are no cameras available for capture.");
@@ -73,40 +98,39 @@ void draw() {
   if (client == null) {
     background(0);
     text("No Client has connected yet......", width/2, height/2);
-  } 
-  
-  else if (client != null) {
-    
+  } else if (client != null) {
+
     //sending the coordinate values to the client for display
     String foo = ballX + "," + ballY + "," + ballZ + "," + xVel + "," + yVel + "," + zVel;
     server.write(foo);
     //getting them back to do failsafe check below
     inMes = client.readStringUntil('*');
     println("Client Sent:" + inMes);
-    
+
     float[] cVals = getVars(inMes);
     float[] sVals = getVars(foo);
-    
+
     //if the server has run ahead of the values of the client for some reason this should bring thhem back to the same values
-    for(int i = 0; i < cVals.length; i++) {
+    for (int i = 0; i < cVals.length; i++) {
       if (!( (cVals[i] > sVals[i] - 0.00001) && (cVals[i] < sVals[i] + 0.00001) )) {
-       sVals[i] = cVals[i];
+        sVals[i] = cVals[i];
       }
     } 
-    
-      
+
+
+    background(255);
     translate(width/2, height/2);
     camstuff();
     stroke(0);
     imageMode(CENTER);
-    tint(255, 220);
+    tint(255, 235);
     image(background, 0, 0, width, height);
     textSize(15);
     fill(0);
     text("Score: "+score, -280, -220);
     text("Highscore: "+highscore, 100, -220);
     fill(255*ballZ);
-    if (ballZ>0.75)fill(0, 255*ballZ, 0);
+    if (ballZ>0.75 && zVel>0)fill(0, 255*ballZ, 0);
     ellipse(ballX*ballZ, ballY*ballZ, 50*ballZ, 50*ballZ);
 
     fill(255, 128, 128, 20);
@@ -124,7 +148,7 @@ void draw() {
     ballX+=xVel;
     ballY+=yVel;
     ballZ+=zVel;
-    if (ballZ<=0.001) {
+    if (ballZ<=0.5) {
       zVel=abs(zVel);
     }
     if (ballZ>=1.1) {
@@ -138,16 +162,16 @@ void draw() {
         highscore = score;
       }
     }
-    if (ballX<=width/-2) {
+    if (ballX<=(width/-2)+25) {
       xVel=abs(xVel);
     }
-    if (ballX>=width/2) {
+    if (ballX>=(width/2)-25) {
       xVel=abs(xVel)*-1;
     }
-    if (ballY<=height/-2) {
+    if (ballY<=(height/-2)+25) {
       yVel=abs(yVel);
     }
-    if (ballY>=height/2) {
+    if (ballY>=(height/2)-25) {
       yVel=abs(yVel)*-1;
     }
     if (dead) {
@@ -157,24 +181,32 @@ void draw() {
         }
       }
     }
-
-    if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
-      if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
-        //////println("hit");
-        hitSound.play();
-        hitSound.rewind();
-        zVel=(0.4-ballZ)/100;
-        xVel+=(ballX-(handX-width/2))/10;
-        yVel+=(ballY-(handY-height/2))/10;
-        score++;
-      }
+    float aveSize=0;
+    for (Float f : paddleSizes) {
+      aveSize+=f;
+    }
+    aveSize/=paddleSizes.size();
+    //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
+    //println((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize));
+    /*if((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize)>2){
+     hitFrames++;
+     }else{
+     hitFrames=0;
+     }
+     if(hitFrames>4)hit();*/
+    if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
+      //println(abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))+", "+abs(aveSize*0.2));
+      hit();
     }
     ////////println("X: "+ballX+", Y: "+ballY);
   }
 }
 
-void mouseClicked() {
-  if (ballZ>0.75 && ballZ<1.1) {
+void hit() {
+  fill(255, 255, 0, 100);
+  rectMode(CENTER);
+  rect(handX-width/2, handY-height/2, 50, 50);
+  if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       //////println("hit");
       hitSound.play();
@@ -228,6 +260,10 @@ void camstuff() {
     }
   }
   updatePixels();
+  
+  
+  blur();
+  
   //image(cam, 0, 0);
   objects = new int[h][l];
 
@@ -238,14 +274,14 @@ void camstuff() {
 
   loadPixels();
   markBlobs();
-  updatePixels();
+  //updatePixels();
 
   markSeparate();
   findUnique();
 
   fillBiggest();
   findEdges();
-  updatePixels();
+  //updatePixels();
 
   //pause();
   //fill(0,255,255);
@@ -314,7 +350,8 @@ void markBlobs() {
 boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
-  if ((green/blue < (0.6307366 + 0.15)) && (green/blue > (0.6307366 - 0.15))) {
+  float red = red(c);
+  if (brightness(c)>100 && (green/blue < (0.6307366 + 0.2)) && (green/blue > (0.6307366 - 0.2)) && (green/red > 1.5) && (blue/red > 2)) {
     return true;
   } else {
     return false;
@@ -396,6 +433,8 @@ void makeRect( int[][] coords ) {
   noFill();
   stroke(255, 0, 0);
   rect( minX, minY, maxX - minX, maxY - minY );
+  paddleSizes.add(new Float((maxY-minX)*(maxY-minY)));
+  if (paddleSizes.size()>20)paddleSizes.remove(0);
   fill(255);
 }
 
@@ -501,6 +540,21 @@ void pause (int s) {
 
 float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   float[] ans = new float[2];
+  newCOG(x, y);
+  for (int h = 0; h < oleCOG.length; h++) {
+    ans[0] += oleCOG[h][0];
+    ans[1] += oleCOG[h][1];
+  }
+  ans[0] = ans[0]/oleCOG.length;
+  ans[1] = ans[1]/oleCOG.length;
+  return ans;
+}
+
+float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
+  if (frCo >= oleCOG.length) {
+    frCo = 0;
+  }
+  float[] ans = new float[2];
   for (int h = 0; h < x.size (); h++) {
     ans[0] += x.get(h);
   }
@@ -509,27 +563,81 @@ float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
   }
   ans[0] = ans[0]/x.size();
   ans[1] = ans[1]/y.size();
+  /*if ( (COG[0] > (-1.0 - 0.00001)) && (COG[0] < (-1.0 + 0.00001))) { 
+   COG = ans;
+   } else if (ans[0]*/
+  oleCOG[frCo] = ans; 
+  frCo++;
   return ans;
 }
+
+
+void blur() {
+  //if (toggle) {
+  loadPixels();
+
+  for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
+    for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
+      int loc = c + r*width;
+      /*color[][] cols = new color[matrix.length][matrix[0].length];
+       for (int x = c-1; x <= c+1; x++) {
+       for(int y = r-1; y <= r+1; y++) {
+       int pla = x + y*width;
+      /*if (((y + 1) - r) == -1) {
+       println(y);
+       println(r);
+       }
+       else { println("shit");}
+       cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
+       }
+       }*/
+      color neCo = convolve(matrix, c - (matrix.length - 1)/2, r - (matrix.length - 1)/2);
+      pixels[loc] = neCo;
+    }
+  }
+  updatePixels();
+  //}
+}
+
+
+color convolve (float[][] matrix, int x, int y) {
+  float red =0;
+  float green =0;
+  float blue =0;
+  float sum =0;
+  for(int c = 0; c < matrix.length; c++) {
+    for (int h = 0; h < matrix[c].length; h++) {
+      int loc = (x + c) + (y + h)*width;
+      red += (red(pixels[loc]) * matrix[c][h]);
+      green += (green(pixels[loc]) * matrix[c][h]);
+      blue += (blue(pixels[loc]) * matrix[c][h]);
+      sum += matrix[c][h];
+    }
+  }
+  red /= sum;
+  green /= sum;
+  blue /= sum;
+  return color(red,green,blue);
+}
+
+
 
 
 float[] getVars (String input) {
   float[] ans = new float[6];
   int ind = 0; 
   int las = 0;
-  for (int c = 0; c < input.length(); c ++) {
+  for (int c = 0; c < input.length (); c ++) {
     if (input.substring(c, c+1).equals(",")) {
-      ans[ind] = Float.parseFloat(input.substring(las,c));
+      ans[ind] = Float.parseFloat(input.substring(las, c));
       las = c +1;
       ind++;
-    }
-    else if (c == input.length() -1) {
-      ans[ind] = Float.parseFloat(input.substring(las,input.length()));
+    } else if (c == input.length() -1) {
+      ans[ind] = Float.parseFloat(input.substring(las, input.length()));
       las = c +1;
       ind++;
     }
   }
   return ans;
 }
-
 
