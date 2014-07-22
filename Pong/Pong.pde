@@ -32,8 +32,6 @@ float aveGR,aveGB,aveBR;
 
 float padR,padG,padB;
 
-//float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
-//float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 
 AudioPlayer audioPlayer;
@@ -67,17 +65,13 @@ void setup() {
   String[] cameras = Capture.list();
 
   if (cameras == null) {
-    ////println("Failed to retrieve the list of available cameras, will try the default...");
+    println("Failed to retrieve the list of available cameras, will try the default...");
     cam = new Capture(this, l, h);
   } 
   if (cameras.length == 0) {
-    ////println("There are no cameras available for capture.");
+    println("There are no cameras available for capture.");
     exit();
   } else {
-    ////println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      ////println(cameras[i]);
-    }
 
     cam = new Capture(this, cameras[0]);
 
@@ -149,7 +143,6 @@ void draw(){
    minBR=minBlue/maxRed;
    maxBR=maxBlue/minRed;
    
-   //println(minBR+", "+maxBR);
    game=true;
  }
 }
@@ -170,14 +163,6 @@ void calibrate(){
   updatePixels();
   loadPixels();
   topLeft=color(pixels[0]);
-  //pixels[pixels.length/2]=color(255,0,0);
-  //println(red(topLeft)+", "+green(topLeft)+", "+blue(topLeft)); 
-  //stroke(255);
-  //strokeWeight(3);
-  //fill(255,125);
-  //noFill();
-  //rect(width/2-25,height/2-25,50,50);
-  //strokeWeight(1);
   fill(255);
   textSize(20);
   if(!capture){
@@ -671,7 +656,6 @@ void blur() {
     }
   }
   updatePixels();
-  //}
 }
 
 
