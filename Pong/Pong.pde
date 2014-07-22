@@ -32,8 +32,6 @@ float aveGR,aveGB,aveBR;
 
 float padR,padG,padB;
 
-//float[][] matrix = {{1,2,1},{2,4,2},{1,2,1}};
-//float[][] matrix = {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1} };
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 
 AudioPlayer audioPlayer;
@@ -48,7 +46,6 @@ float xVel, yVel, zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
-int hitFrames=0;
 
 void setup() {
   l=640;
@@ -67,17 +64,13 @@ void setup() {
   String[] cameras = Capture.list();
 
   if (cameras == null) {
-    ////println("Failed to retrieve the list of available cameras, will try the default...");
+    println("Failed to retrieve the list of available cameras, will try the default...");
     cam = new Capture(this, l, h);
   } 
   if (cameras.length == 0) {
-    ////println("There are no cameras available for capture.");
+    println("There are no cameras available for capture.");
     exit();
   } else {
-    ////println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      ////println(cameras[i]);
-    }
 
     cam = new Capture(this, cameras[0]);
 
@@ -149,7 +142,6 @@ void draw(){
    minBR=minBlue/maxRed;
    maxBR=maxBlue/minRed;
    
-   //println(minBR+", "+maxBR);
    game=true;
  }
 }
@@ -170,14 +162,6 @@ void calibrate(){
   updatePixels();
   loadPixels();
   topLeft=color(pixels[0]);
-  //pixels[pixels.length/2]=color(255,0,0);
-  //println(red(topLeft)+", "+green(topLeft)+", "+blue(topLeft)); 
-  //stroke(255);
-  //strokeWeight(3);
-  //fill(255,125);
-  //noFill();
-  //rect(width/2-25,height/2-25,50,50);
-  //strokeWeight(1);
   fill(255);
   textSize(20);
   if(!capture){
@@ -220,12 +204,7 @@ void game() {
   fill(padR, padG, padB*0, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
-  //////println(handX);
-  /*if (mousePressed) {
-    fill(255, 255, 0, 100);
-    rectMode(CENTER);
-    rect(handX-width/2, handY-height/2, 50, 50);
-  }*/
+  
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
@@ -268,19 +247,11 @@ void game() {
     aveSize+=f;
   }
   aveSize/=paddleSizes.size();
-  //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
-  //println((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize));
-  /*if((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize)>2){
-   hitFrames++;
-   }else{
-   hitFrames=0;
-   }
-   if(hitFrames>4)hit();*/
+  
   if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
-    //println(abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))+", "+abs(aveSize*0.2));
     hit();
   }
-  ////////println("X: "+ballX+", Y: "+ballY);
+  
 }
 
 void hit() {
@@ -654,24 +625,11 @@ void blur() {
   for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
     for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
       int loc = c + r*width;
-      /*color[][] cols = new color[matrix.length][matrix[0].length];
-       for (int x = c-1; x <= c+1; x++) {
-       for(int y = r-1; y <= r+1; y++) {
-       int pla = x + y*width;
-      /*if (((y + 1) - r) == -1) {
-       println(y);
-       println(r);
-       }
-       else { println("shit");}
-       cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
-       }
-       }*/
       color neCo = convolve(matrix, c - (matrix.length - 1)/2, r - (matrix.length - 1)/2);
       pixels[loc] = neCo;
     }
   }
   updatePixels();
-  //}
 }
 
 
