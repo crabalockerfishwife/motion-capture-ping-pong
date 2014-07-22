@@ -144,6 +144,9 @@ class UDPServer
 	    clieTwo = port;
 	    return 2;
 	}
+	else if (port == clieTwo || port == clieOne) {
+	    return 2;
+	}
 	else {
 	    return 0;
 	}
