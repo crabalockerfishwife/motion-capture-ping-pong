@@ -5,6 +5,9 @@ class UDPServer
 {
     int clieOne = -1;
     int clieTwo = -1;
+    
+    InetAddress IPOne;
+    InetAddress IpTwo;
 
     float ballXO, ballYO, ballZO;
     float xVelO, yVelO, zVelO;
@@ -24,13 +27,15 @@ class UDPServer
 		byte[] sendData = new byte[1024];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		serverSocket.receive(receivePacket);
+		int port = receivePacket.getPort();
+		int res = assignClient(port);
 		String sentence = new String( receivePacket.getData());
 		System.out.println("RECEIVED: " + sentence);
 		InetAddress IPAddress = receivePacket.getAddress();
-		int port = receivePacket.getPort();
 		String capitalizedSentence = sentence.toUpperCase();
 		capitalizedSentence += port;
 		System.out.println(capitalizedSentence);
+		setup(res, capitalizedSentence);
                 sendData = capitalizedSentence.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 		System.out.println("Data sent");
@@ -101,5 +106,17 @@ class UDPServer
 	    return 0;
 	}
     }
+
+    public void setup (int aCR, String datPak) {
+	if (aCR == 1) {
+	    IPOne = receivePacket.getAddress();
+	    action(datPak);
+	}
+	else if (aCR == 2) {
+	    IPTwo = receivePacket.getAddress();
+	    action(datPak);
+	}
+    }
+	    
     
 }
