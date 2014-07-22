@@ -639,18 +639,6 @@ void blur() {
   for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
     for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
       int loc = c + r*width;
-      /*color[][] cols = new color[matrix.length][matrix[0].length];
-       for (int x = c-1; x <= c+1; x++) {
-       for(int y = r-1; y <= r+1; y++) {
-       int pla = x + y*width;
-      /*if (((y + 1) - r) == -1) {
-       println(y);
-       println(r);
-       }
-       else { println("shit");}
-       cols[(x + 1) - c][(y + 1) - r] = color(pixels[pla]);
-       }
-       }*/
       color neCo = convolve(matrix, c - (matrix.length - 1)/2, r - (matrix.length - 1)/2);
       pixels[loc] = neCo;
     }
