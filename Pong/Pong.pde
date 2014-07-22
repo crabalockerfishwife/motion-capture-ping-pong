@@ -229,7 +229,7 @@ void game() {
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
-  if (ballZ<=0.5) {
+  if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
   if (ballZ>=1.1) {
