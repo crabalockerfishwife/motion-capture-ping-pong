@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 class UDPServer
 {
@@ -7,7 +8,7 @@ class UDPServer
     int clieTwo = -1;
     
     InetAddress IPOne;
-    InetAddress IpTwo;
+    InetAddress IPTwo;
 
     float ballXO, ballYO, ballZO;
     float xVelO, yVelO, zVelO;
@@ -20,7 +21,7 @@ class UDPServer
 	//DatagramSocket serverSocket = new DatagramSocket(9876);
 	//byte[] receiveData = new byte[1024];
 	//byte[] sendData = new byte[1024];  
-	while(true)
+	/*while(true)
 	    {
 		DatagramSocket serverSocket = new DatagramSocket(9876);
 		byte[] receiveData = new byte[1024];
@@ -35,14 +36,71 @@ class UDPServer
 		String capitalizedSentence = sentence.toUpperCase();
 		capitalizedSentence += port;
 		System.out.println(capitalizedSentence);
-		setup(res, capitalizedSentence);
+		if (res == 1) {
+		    IPOne = receivePacket.getAddress();
+		    action(capitalizedSentence);
+		}
+		else if (res == 2) {
+		    IPTwo = receivePacket.getAddress();
+		    action(capitalizedSentence);
+		}
                 sendData = capitalizedSentence.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 		System.out.println("Data sent");
                 serverSocket.send(sendPacket);
 		serverSocket.close();
-               }
+		}*/
+	UDPServer server = new UDPServer();
+	server.work();
+	
       }
+
+    public void work() throws Exception {
+	while(true)
+	    {
+		DatagramSocket serverSocket = new DatagramSocket(9876);
+		byte[] receiveData = new byte[1024];
+		byte[] sendData = new byte[1024];
+		//byte[] senDatO = new byte[1024];
+		//byte[] senDatT = new byte[1024];
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		serverSocket.receive(receivePacket);
+		int port = receivePacket.getPort();
+		int res = assignClient(port);
+		String sentence = new String( receivePacket.getData());
+		System.out.println("RECEIVED: " + sentence);
+		InetAddress IPAddress = receivePacket.getAddress();
+		String capitalizedSentence = sentence.toUpperCase();
+		capitalizedSentence += port;
+		System.out.println(capitalizedSentence);
+		if (res == 1) {
+		    IPOne = receivePacket.getAddress();
+		    //action(capitalizedSentence);
+		}
+		else if (res == 2) {
+		    IPTwo = receivePacket.getAddress();
+		    String outTwo = Arrays.toString(swap(getVals(capitalizedSentence)));
+		    sendData = capitalizedSentence.getBytes();
+		    DatagramPacket senPac = new DatagramPacket(sendData, sendData.length, IPOne, clieOne);
+		    serverSocket.send(senPac);
+		    System.out.println("Client One Sent");
+		    serverSocket.close();
+		    serverSocket = new DatagramSocket(9876);
+		    sendData = outTwo.getBytes();
+		    DatagramPacket sedPak = new DatagramPacket(sendData, sendData.length, IPTwo, clieTwo);
+		    serverSocket.send(sedPak);
+		    System.out.println("Client Two Sent");
+		    serverSocket.close();
+		    serverSocket = new DatagramSocket(9876);
+		}
+                sendData = capitalizedSentence.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+		System.out.println("Data sent");
+                serverSocket.send(sendPacket);
+		serverSocket.close();
+	    }
+    }
+	
 
 
     private float[] swap (float[] vals) {
@@ -76,22 +134,6 @@ class UDPServer
 	return out;
     }
 
-    public void action (String clOnIn) {
-	float[] inpOne = getVals(clOnIn);
-	float[] twoInp = swap(inpOne);
-	ballXO = inpOne[0];
-	ballYO = inpOne[1];
-	ballZO = inpOne[2];
-	xVelO = inpOne[3];
-	yVelO = inpOne[4];
-	zVelO = inpOne[5];
-	baXT = twoInp[0];
-	baYT = twoInp[1];
-	baZT = twoInp[2];
-	xVeT = twoInp[3];
-	yVeT = twoInp[4];
-	zVeT = twoInp[5];
-    }
     
     public int assignClient (int port) {
 	if (clieOne == -1) {
@@ -107,16 +149,6 @@ class UDPServer
 	}
     }
 
-    public void setup (int aCR, String datPak) {
-	if (aCR == 1) {
-	    IPOne = receivePacket.getAddress();
-	    action(datPak);
-	}
-	else if (aCR == 2) {
-	    IPTwo = receivePacket.getAddress();
-	    action(datPak);
-	}
-    }
 	    
     
 }
