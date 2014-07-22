@@ -46,7 +46,6 @@ float xVel, yVel, zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
-int hitFrames=0;
 
 void setup() {
   l=640;
@@ -205,12 +204,7 @@ void game() {
   fill(padR, padG, padB*0, 100);
   rectMode(CENTER);
   rect(handX-width/2, handY-height/2, 50, 50);
-  //////println(handX);
-  /*if (mousePressed) {
-    fill(255, 255, 0, 100);
-    rectMode(CENTER);
-    rect(handX-width/2, handY-height/2, 50, 50);
-  }*/
+  
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
@@ -253,19 +247,11 @@ void game() {
     aveSize+=f;
   }
   aveSize/=paddleSizes.size();
-  //println(aveSize+", "+paddleSizes.get(paddleSizes.size()-1));
-  //println((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize));
-  /*if((abs(paddleSizes.get(paddleSizes.size()-1)-aveSize))/abs(aveSize)>2){
-   hitFrames++;
-   }else{
-   hitFrames=0;
-   }
-   if(hitFrames>4)hit();*/
+  
   if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
-    //println(abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))+", "+abs(aveSize*0.2));
     hit();
   }
-  ////////println("X: "+ballX+", Y: "+ballY);
+  
 }
 
 void hit() {
