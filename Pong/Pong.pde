@@ -260,7 +260,6 @@ void hit() {
   rect(handX-width/2, handY-height/2, 50, 50);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
-      //////println("hit");
       hitSound.play();
       hitSound.rewind();
       zVel=(0.7-ballZ)/100-score/1000;
@@ -268,8 +267,6 @@ void hit() {
       yVel+=(ballY-(handY-height/2))/10;
       score++;
     }
-  } else {
-    //score-=0.05;
   }
 }
 
@@ -288,9 +285,6 @@ void restart() {
 }
 
 
-//CAMSTUFF
-//CAMSTUFF
-//CAMSTUFF BUFFER
 
 void camstuff() {
   if (cam.available() == true) {
@@ -310,7 +304,6 @@ void camstuff() {
   
   blur();
   
-  //image(cam, 0, 0);
   objects = new int[h][l];
 
 
@@ -329,9 +322,6 @@ void camstuff() {
   findEdges();
   //updatePixels();
 
-  //pause();
-  //fill(0,255,255);
-  //ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
   float[]coor=COG(xLoc,yLoc);
   handX=coor[0];
   handY=coor[1];
@@ -601,7 +591,6 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
 
 
 void blur() {
-  //if (toggle) {
   loadPixels();
 
   for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
