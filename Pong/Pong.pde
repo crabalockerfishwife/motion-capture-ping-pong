@@ -332,8 +332,9 @@ void camstuff() {
   //pause();
   //fill(0,255,255);
   //ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
-  handX=COG(xLoc, yLoc)[0];
-  handY=COG(xLoc, yLoc)[1];
+  float[]coor=COG(xLoc,yLoc);
+  handX=coor[0];
+  handY=coor[1];
 }
 
 void fillBiggest() {
@@ -609,9 +610,6 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
   }
   ans[0] = ans[0]/x.size();
   ans[1] = ans[1]/y.size();
-  /*if ( (COG[0] > (-1.0 - 0.00001)) && (COG[0] < (-1.0 + 0.00001))) { 
-   COG = ans;
-   } else if (ans[0]*/
   oleCOG[frCo] = ans; 
   frCo++;
   return ans;
