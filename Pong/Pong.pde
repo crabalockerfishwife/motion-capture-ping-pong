@@ -458,14 +458,7 @@ H:
       }
     }
   }
-  /*
-  ellipseMode(CENTER);
-   fill(255);
-   for (int i =0; i < edges.length; i++) {
-   ellipse( edges[i][1], edges[i][0], 10, 10);
-   ////println( edges[i][0] + " , " + edges[i][1] );
-   }
-   */
+  
   makeRect( edges );
 }
 
@@ -547,15 +540,6 @@ void findUnique() {
       unique.add(i);
     }
   }
-  /*
-  //if (start) {
-   blobs = new color[ unique.size() ];
-   for (int i = 0; i < blobs.length; i++) {
-   blobs[i] = color( random(255), random(255), random(255 ) );
-   }
-   //start = false;
-   //}
-   */
 }
 
 int findMin( int a, int b, int c, int d ) {
