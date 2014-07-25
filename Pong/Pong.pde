@@ -267,7 +267,7 @@ void hit() {
       yVel+=(ballY-(handY-height/2))/10;
       score++;
       tomatophase++;
-      if ((tomatophase%5)==0)loadimages(tomatophase%5);
+      if ((tomatophase%5)==0)loadimages(tomatophase/5);
     }
   }
 }
