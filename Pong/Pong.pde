@@ -37,7 +37,7 @@ AudioPlayer hitSound;
 Minim minim;
 Minim hitMinim;
 
-PImage background,tomato,tomatox;
+PImage background,tomato,tomatox,spatula,spatulax;
 int tomatophase;
 float score, highscore;
 float ballX, ballY, ballZ;
@@ -201,9 +201,9 @@ void game() {
   
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
-  fill(padR, padG, padB*0, 100);
-  rectMode(CENTER);
-  rect(handX-width/2, handY-height/2, 50, 50);
+  tint(padR, padG, padB);
+  imageMode(CENTER);
+  image(spatula,handX-width/2, handY-height/2, 70, 70);
   
   ballX+=xVel;
   ballY+=yVel;
@@ -255,9 +255,10 @@ void game() {
 }
 
 void hit() {
-  fill(padR*2, padG*2, padB*2, 100);
+  tint(padR*2, padG*2, padB*2);
+  imageMode(CENTER);
   rectMode(CENTER);
-  rect(handX-width/2, handY-height/2, 50, 50);
+  image(spatulax, handX-width/2, handY-height/2, 70, 70);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       hitSound.play();
@@ -266,14 +267,15 @@ void hit() {
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
-      tomatophase++;
-      if ((tomatophase%5)==0)loadimages(tomatophase/5);
+      if(score%5==0)tomatophase++;loadimages(tomatophase);
     }
   }
 }
 
 void setupScreen() {
   background=loadImage("art/Background.png");
+  spatula=loadImage("art/spatula.png");
+  spatulax=loadImage("art/spatulax.png");
   loadimages(tomatophase);
   ballZ=0.01;
   zVel=0.01;
