@@ -201,10 +201,6 @@ void game() {
   
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
-  tint(padR, padG, padB);
-  imageMode(CENTER);
-  image(spatula,handX-width/2, handY-height/2, 70, 70);
-  
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel;
@@ -251,7 +247,12 @@ void game() {
   if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
     hit();
   }
-  
+  else{
+    tint(padR, padG, padB);
+    imageMode(CENTER);
+    image(spatula,handX-width/2, handY-height/2, 70, 70);
+  }
+ 
 }
 
 void hit() {
