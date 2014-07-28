@@ -12,7 +12,7 @@ int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
 float[] COG = new float[2];
-float[][] oleCOG = new float[3][2];
+float[][] oleCOG = new float[4][2];
 int frCo = 0;
 
 color topLeft;
