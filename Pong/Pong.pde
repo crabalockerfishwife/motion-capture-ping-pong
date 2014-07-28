@@ -259,7 +259,7 @@ void hit() {
   tint(padR*2, padG*2, padB*2);
   imageMode(CENTER);
   rectMode(CENTER);
-  image(spatulax, handX-width/2, handY-height/2, 70, 70);
+  image(spatulax, handX-width/2, handY-height/2, -70, 70);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       hitSound.play();
