@@ -212,6 +212,22 @@ void game() {
     fill(128, 0, 0);
     textSize(50);
     text("GAME OVER\nScore: "+score, 0, 0);
+    textSize(20);
+    text("Hit ENTER to restart",0,200);
+    audioPlayer.pause();
+    musicstarted=false;
+    dead = true;
+    if (score>highscore) {
+      highscore = score;
+    }
+  }
+ if (tomatophase>20) {
+    background(0);
+    fill(128, 255, 128);
+    textSize(50);
+    text("YOU WIN\nScore: "+score, 0, 0);
+    textSize(20);
+    text("Hit ENTER to restart",0,200);
     audioPlayer.pause();
     musicstarted=false;
     dead = true;
