@@ -177,9 +177,9 @@ void calibrate(){
   topLeft=color(pixels[0]);
   fill(255);
   textSize(20);
-  if(!capture){
-    text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
-  }
+  
+  if(!capture) text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
+  
   else{
     text("Capturing...",width/2-50,height-50);
     allGR.add(green(topLeft)/red(topLeft));
@@ -205,10 +205,9 @@ void game() {
   fill(0);
   text("Score: "+score, -280, -220);
   text("Highscore: "+highscore, 100, -220);
-  fill(255*ballZ);
-  if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);//fill(0, 255*ballZ, 0);
+  
+  if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
   else image(tomato,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
-  //ellipse(ballX*ballZ, ballY*ballZ, 50*ballZ, 50*ballZ);
   fill(255, 128, 128, 20);
   
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
@@ -229,9 +228,7 @@ void game() {
     audioPlayer.pause();
     musicstarted=false;
     dead = true;
-    if (score>highscore) {
-      highscore = score;
-    }
+    if (score>highscore) highscore = score;
   }
  if (tomatophase>20) {
     background(0);
@@ -243,9 +240,7 @@ void game() {
     audioPlayer.pause();
     musicstarted=false;
     dead = true;
-    if (score>highscore) {
-      highscore = score;
-    }
+    if (score>highscore) highscore = score;
   }
   if (ballX<=(width/-2)+25) {
     xVel=abs(xVel);
