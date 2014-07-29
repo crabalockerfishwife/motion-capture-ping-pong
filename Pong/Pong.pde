@@ -12,7 +12,7 @@ int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
 float[] COG = new float[2];
-float[][] oleCOG = new float[4][2];
+float[][] oleCOG = new float[3][2];
 int frCo = 0;
 
 color topLeft;
@@ -25,6 +25,7 @@ ArrayList<Float>allBlue = new ArrayList<Float>();
 ArrayList<Float>allRed = new ArrayList<Float>();
 boolean capture=false;
 boolean musicstarted=false;
+boolean easteregg=false;
 float minGR,maxGR,minGB,maxGB,minBR,maxBR;
 float aveGR,aveGB,aveBR;
 
@@ -83,6 +84,17 @@ void setup() {
 void draw(){
  if(game){
    game();
+   if (keyPressed && key == 'j'){
+     if (!easteregg){
+       tomato=loadImage("art/jonalf.png");
+       tomatox=loadImage("art/jonalf.png");
+       easteregg=true;
+     }
+     else{
+       loadimages(tomatophase);
+       easteregg=false;
+     }
+   }
    if(!musicstarted){
      audioPlayer.play();
      audioPlayer.loop(); 
@@ -203,7 +215,7 @@ void game() {
 
   ballX+=xVel;
   ballY+=yVel;
-  ballZ+=zVel;
+  ballZ+=zVel*1.2;
   if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
