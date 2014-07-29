@@ -152,19 +152,17 @@ void eastereggcheck(){
     if(!easteregg){
        tomato=loadImage("art/"+key+".png");
        tomatox=loadImage("art/"+key+".png");
-       easteregg=true;
     }
      else{
        loadimages(tomatophase);
-       easteregg=false;
      }
+     easteregg=!easteregg;
   }
 }
 
 void calibrate(){
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available() == true) cam.read();
+  
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -192,9 +190,8 @@ void calibrate(){
     allRed.add(red(topLeft));
   }
   
-  if(keyPressed && key==' '){
-   capture=true; 
-  }
+  if(keyPressed && key==' ') capture=true; 
+  
 }
 
 void game() {
