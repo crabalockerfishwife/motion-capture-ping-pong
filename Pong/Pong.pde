@@ -84,17 +84,7 @@ void setup() {
 void draw(){
  if(game){
    game();
-   if (keyPressed && key == 'j'){
-     if (!easteregg){
-       tomato=loadImage("art/jonalf.png");
-       tomatox=loadImage("art/jonalf.png");
-       easteregg=true;
-     }
-     else{
-       loadimages(tomatophase);
-       easteregg=false;
-     }
-   }
+   eastereggcheck();
    if(!musicstarted){
      audioPlayer.play();
      audioPlayer.loop(); 
@@ -155,6 +145,20 @@ void draw(){
    
    game=true;
  }
+}
+
+void eastereggcheck(){
+  if (keyPressed && (key == 'j' || key == 's' || key == 'm' || key == 't' || key == 'y')){
+    if(!easteregg){
+       tomato=loadImage("art/"+key+".png");
+       tomatox=loadImage("art/"+key+".png");
+       easteregg=true;
+    }
+     else{
+       loadimages(tomatophase);
+       easteregg=false;
+     }
+  }
 }
 
 void calibrate(){
@@ -417,7 +421,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  return (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) )
+  return (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) );
 }
 
 void markSeparate() {
