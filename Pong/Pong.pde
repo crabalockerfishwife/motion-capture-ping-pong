@@ -258,12 +258,8 @@ void game() {
   if (ballY>=(height/2)-25) {
     yVel=abs(yVel)*-1;
   }
-  if (dead) {
-    if (keyPressed) {
-      if (key==ENTER) {
-        restart();
-      }
-    }
+  if (dead && keyPressed && key==ENTER) {
+    restart();
   }
   float aveSize=0;
   for (Float f : paddleSizes) {
