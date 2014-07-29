@@ -59,8 +59,6 @@ void setup() {
   hitMinim = new Minim(this);
   hitSound = hitMinim.loadFile("Hit.mp3");
   
-  ballZ=0.5;
-
   String[] cameras = Capture.list();
 
   if (cameras == null) {
@@ -306,7 +304,7 @@ void setupScreen() {
   spatula=loadImage("art/spatula.png");
   spatulax=loadImage("art/spatulax.png");
   loadimages(tomatophase);
-  ballZ=0.01;
+  ballZ=0.5;
   zVel=0.01;
   xVel=random(5)-2.5;
   yVel=random(5)-2.5;
@@ -357,7 +355,6 @@ void camstuff() {
   findUnique();
 
   fillBiggest();
-  findEdges();
   //updatePixels();
 
   float[]coor=COG(xLoc,yLoc);
@@ -431,79 +428,6 @@ boolean isHand(color c) {
   } else {
     return false;
   }
-}
-
-void findEdges() {
-  edges = new int[4][2];
-  // find top
-A:
-  for (int y = 0; y<h; y++) {
-B: 
-    for (int x = 0; x < l; x++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[0][0] = y;
-        edges[0][1] = x;
-        break A;
-      }
-    }
-  }
-
-  // find bottom
-C: 
-  for (int y = h-1; y > -1; y--) {
-D: 
-    for (int x = 0; x < l; x++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[1][0] = y;
-        edges[1][1] = x;
-        break C;
-      }
-    }
-  }
-
-  // find left
-E: 
-  for (int x = 0; x < l; x++) {
-F: 
-    for (int y = 0; y < h; y++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[2][0] = y;
-        edges[2][1] = x;
-        break E;
-      }
-    }
-  }
-
-  // right
-G: 
-  for (int x = (l-1); x > -1; x--) {
-H: 
-    for (int y = 0; y < h; y++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[3][0] = y;
-        edges[3][1] = x;
-        break G;
-      }
-    }
-  }
-  
-  makeRect( edges );
-}
-
-void makeRect( int[][] coords ) {
-  // order: top, bottom, left, right
-  int maxY, minY, maxX, minX;
-  maxY = coords[0][0];
-  minY = coords[1][0];
-  maxX = coords[3][1];
-  minX = coords[2][1];
-  rectMode(CORNER);
-  noFill();
-  stroke(255, 0, 0);
-  rect( minX, minY, maxX - minX, maxY - minY );
-  paddleSizes.add(new Float((maxY-minX)*(maxY-minY)));
-  if (paddleSizes.size()>20)paddleSizes.remove(0);
-  fill(255);
 }
 
 void markSeparate() {
