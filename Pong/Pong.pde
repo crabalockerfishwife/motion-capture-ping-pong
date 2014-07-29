@@ -423,11 +423,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) ) {
-    return true;
-  } else {
-    return false;
-  }
+  return (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) )
 }
 
 void markSeparate() {
