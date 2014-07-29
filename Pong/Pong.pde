@@ -54,6 +54,8 @@ void setup() {
   restart();
   highscore=0;
 
+  imageMode(CENTER);
+
   minim = new Minim(this);
   audioPlayer = minim.loadFile("Tomato.mp3");
   hitMinim = new Minim(this);
@@ -196,7 +198,6 @@ void game() {
   translate(width/2, height/2);
   camstuff();
   stroke(0);
-  imageMode(CENTER);
   tint(255, 235);
   image(background, 0, 0, width, height);
   textSize(15);
@@ -275,7 +276,6 @@ void game() {
   }
   else{
     tint(padR, padG, padB);
-    imageMode(CENTER);
     image(spatula,handX-width/2, handY-height/2, 70, 70);
   }
  
@@ -283,8 +283,6 @@ void game() {
 
 void hit() {
   tint(padR*2, padG*2, padB*2);
-  imageMode(CENTER);
-  rectMode(CENTER);
   image(spatulax, handX-width/2, handY-height/2, -70, 70);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
