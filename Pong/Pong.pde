@@ -217,11 +217,18 @@ void game() {
   if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
-  if (ballZ>=1.1) {
+  
+  if(ballZ>=1.1 || tomatophase>20){
     background(0);
-    fill(128, 0, 0);
     textSize(50);
-    text("GAME OVER\nScore: "+score, 0, 0);
+    if(ballZ>=1.1){
+      fill(128,0,0);
+      text("GAME OVER\nScore: "+score,0,0);
+    }
+    else{
+      fill(128,255,128);
+      text("YOU WIN\nScore: "+score,0,0);
+    }
     textSize(20);
     text("Hit ENTER to restart",0,200);
     audioPlayer.pause();
@@ -229,18 +236,7 @@ void game() {
     dead = true;
     if (score>highscore) highscore = score;
   }
- if (tomatophase>20) {
-    background(0);
-    fill(128, 255, 128);
-    textSize(50);
-    text("YOU WIN\nScore: "+score, 0, 0);
-    textSize(20);
-    text("Hit ENTER to restart",0,200);
-    audioPlayer.pause();
-    musicstarted=false;
-    dead = true;
-    if (score>highscore) highscore = score;
-  }
+
   if (ballX<=(width/-2)+25) {
     xVel=abs(xVel);
   }
