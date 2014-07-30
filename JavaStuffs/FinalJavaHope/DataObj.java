@@ -3,7 +3,17 @@ public class DataObj {
     private volatile float velX, velY, velZ;
 
     private volatile boolean hitOcc = false;
+    
+    private volatile boolean pingComp = false;
 
+    public synchronized void moarPing () {
+	pingComp = true;
+	notifyAll();
+    }
+    public void getPing() {
+	return pingComp;
+    }
+    
 
     public boolean isChange() {
 	return hitOcc;

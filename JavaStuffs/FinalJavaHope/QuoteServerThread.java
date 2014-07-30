@@ -65,19 +65,24 @@ public class QuoteServerThread extends Thread {
 		}
 		else if (res == 2) {
 		    IPTwo = packet.getAddress();
-		    /* String coord = new String(packet.getData());
+		    String ping = new String("Begin");
 		    //assignNums(getVals(coord));
-		    System.out.println("FROM CLIENT AT PORT " + port + ": " + coord);
-		    port = pickPort(address);
+		    //System.out.println("FROM CLIENT AT PORT " + port + ": " + coord);
+		    //port = pickPort(address);
 
-		    String response = Arrays.toString(nums);
+		    //String response = Arrays.toString(nums);
 		    
-		    buf = response.getBytes();
+		    byte[] app = new byte[256];
+		    appOne = ping.getBytes();
+		    
+		    DatagramPacket begOne = new DatagramPacket(app, app.length, IPOne, clieOne);
+		    DatagramPacket begTwo = new DatagramPacket(app, app.length, IPTwo, clieTwo);
 		    
 		    //send response to client address and port
-		    packet = new DatagramPacket(buf, buf.length, address, port);
-		    socket.send(packet);*/
-		    System.out.println("Second Receiver Registered");
+		    //packet = new DatagramPacket(buf, buf.length, address, port);
+		    socket.send(begOne);
+		    socket.send(begTwo);
+		    System.out.println("Second Receiver Registered, and approval sent");
 		}
 		else if (res == 3) {
 		    //IPTwo = receivePacket.getAddress();
@@ -100,7 +105,7 @@ public class QuoteServerThread extends Thread {
 		    buf = coord.getBytes();
 		    
 		    //send response to client address and port
-		    packet = new DatagramPacket(buf, buf.length, address, port);
+		    packet = new DatagramPacket(buf, buf.length, dest, portDest);
 		    socket.send(packet);
 		    System.out.println("New Data Sent From Server");
 		}

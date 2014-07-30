@@ -9,9 +9,10 @@ public class PongClient {
         test.setZ((float) 21.21);
         new QuoteServerThread("Server").start();
         new ClientRec(test).start();
+	while(!test.getPing()) {}
         new ClientSend(test).start();
         while (true) {
-            if (time%1000 == 0) {
+            if (time%700 == 0) {
                 //System.out.println("Ball velocity has changed");
                 //System.out.println(test.isChange());
                 test.hit();

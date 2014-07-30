@@ -68,7 +68,7 @@ public class ClientRec extends Thread{
 		 //DatagramSocket socket = new DatagramSocket();
 
               //sending data
-		 byte[] buf = new byte[256];
+	      byte[] buf = new byte[256];
               //byte[] send = new byte[256];
               String vals = "";
               //updNums();
@@ -94,12 +94,17 @@ public class ClientRec extends Thread{
 
               //display response
               String received = new String(packet.getData());
-              float[] imp = getVals(received);
-              System.out.println("New Coordinate Values from Server: " + received);
-              source.setX(imp[0]);
-              source.setY(imp[1]);
-              source.setZ(imp[2]);
-              updNums();
+	      if (received.equals("Begin")) {
+		  source.moarPing();
+	      }
+	      else {
+		  float[] imp = getVals(received);
+		  System.out.println("New Coordinate Values from Server: " + received);
+		  source.setX(imp[0]);
+		  source.setY(imp[1]);
+		  source.setZ(imp[2]);
+		  updNums();
+	      }
 
               //socket.close();
             } catch (IOException e) {
