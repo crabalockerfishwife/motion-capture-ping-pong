@@ -6,8 +6,7 @@ float handX, handY;
 Capture cam;
 int[][] objects;
 int l, h;
-ArrayList<Integer> label;
-ArrayList<Integer> unique;
+ArrayList<Integer> label, unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
@@ -26,23 +25,19 @@ ArrayList<Float>allRed = new ArrayList<Float>();
 boolean capture=false;
 boolean musicstarted=false;
 boolean easteregg=false;
-float minGR,maxGR,minGB,maxGB,minBR,maxBR;
-float aveGR,aveGB,aveBR;
+float minGR,maxGR,minGB,maxGB,minBR,maxBR, aveGR,aveGB,aveBR;
 
 float padR,padG,padB;
 
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 
-AudioPlayer audioPlayer;
-AudioPlayer hitSound;
-Minim minim;
-Minim hitMinim;
+AudioPlayer audioPlayer, hitSound;
+Minim minim, hitMinim;
 
 PImage background,tomato,tomatox,spatula,spatulax;
 int tomatophase;
 float score, highscore;
-float ballX, ballY, ballZ;
-float xVel, yVel, zVel;
+float ballX, ballY, ballZ, xVel, yVel, zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
@@ -190,9 +185,7 @@ void calibrate(){
     allRed.add(red(topLeft));
   }
   
-  if(keyPressed && key==' '){
-   capture=true; 
-  }
+  if(keyPressed && key==' ') capture=true; 
 }
 
 void game() {
