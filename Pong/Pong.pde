@@ -186,10 +186,8 @@ void calibrate(){
 }
 
 void game() {
+  if(keyPressed && key=='q')score++; //Just a little cheat for testing.
   
-  
-  
-  if(keyPressed && key=='q')score++;
   background(255);
   translate(width/2, height/2);
   camstuff();
