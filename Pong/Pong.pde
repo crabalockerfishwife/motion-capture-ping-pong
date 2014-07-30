@@ -1,20 +1,17 @@
 import ddf.minim.*;
 import processing.video.*;
 
-//final static int id = (int) random(100,999);
-
 float handX, handY;
 
 Capture cam;
 int[][] objects;
 int l, h;
-ArrayList<Integer> label;
-ArrayList<Integer> unique;
+ArrayList<Integer> label, unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
 float[] COG = new float[2];
-float[][] oleCOG = new float[3][2];
+float[][] oleCOG = new float[4][2];
 int frCo = 0;
 
 color topLeft;
@@ -27,22 +24,20 @@ ArrayList<Float>allBlue = new ArrayList<Float>();
 ArrayList<Float>allRed = new ArrayList<Float>();
 boolean capture=false;
 boolean musicstarted=false;
-float minGR,maxGR,minGB,maxGB,minBR,maxBR;
-float aveGR,aveGB,aveBR;
+boolean easteregg=false;
+float minGR,maxGR,minGB,maxGB,minBR,maxBR, aveGR,aveGB,aveBR;
 
 float padR,padG,padB;
 
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
 
-AudioPlayer audioPlayer;
-AudioPlayer hitSound;
-Minim minim;
-Minim hitMinim;
+AudioPlayer audioPlayer, hitSound;
+Minim minim, hitMinim;
 
-PImage background;
+PImage background,tomato,tomatox,spatula,spatulax;
+int tomatophase;
 float score, highscore;
-float ballX, ballY, ballZ;
-float xVel, yVel, zVel;
+float ballX, ballY, ballZ, xVel, yVel, zVel;
 boolean dead=true;
 
 ArrayList<Float>paddleSizes=new ArrayList<Float>();
@@ -54,13 +49,13 @@ void setup() {
   restart();
   highscore=0;
 
+  imageMode(CENTER);
+
   minim = new Minim(this);
   audioPlayer = minim.loadFile("Tomato.mp3");
   hitMinim = new Minim(this);
   hitSound = hitMinim.loadFile("Hit.mp3");
   
-  ballZ=0.5;
-
   String[] cameras = Capture.list();
 
   if (cameras == null) {
@@ -84,6 +79,7 @@ void setup() {
 void draw(){
  if(game){
    game();
+   eastereggcheck();
    if(!musicstarted){
      audioPlayer.play();
      audioPlayer.loop(); 
@@ -146,6 +142,19 @@ void draw(){
  }
 }
 
+void eastereggcheck(){
+  if (keyPressed && (key == 'j' || key == 's' || key == 'm' || key == 't' || key == 'y' || key == 'c')){
+    if(!easteregg){
+       tomato=loadImage("art/"+key+".png");
+       tomatox=loadImage("art/"+key+"x.png");
+    }
+     else{
+       loadimages(tomatophase);
+     }
+     easteregg=!easteregg;
+  }
+}
+
 void calibrate(){
   if (cam.available() == true) {
     cam.read();
@@ -164,9 +173,7 @@ void calibrate(){
   topLeft=color(pixels[0]);
   fill(255);
   textSize(20);
-  if(!capture){
-    text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
-  }
+  if(!capture) text("Hold paddle over the top left corner, and press spacebar.",0,height-50);
   else{
     text("Capturing...",width/2-50,height-50);
     allGR.add(green(topLeft)/red(topLeft));
@@ -177,51 +184,54 @@ void calibrate(){
     allRed.add(red(topLeft));
   }
   
-  if(keyPressed && key==' '){
-   capture=true; 
-  }
+  if(keyPressed && key==' ') capture=true; 
 }
 
 void game() {
+  
+  
+  
+  if(keyPressed && key=='q')score++;
   background(255);
   translate(width/2, height/2);
   camstuff();
   stroke(0);
-  imageMode(CENTER);
   tint(255, 235);
   image(background, 0, 0, width, height);
   textSize(15);
   fill(0);
   text("Score: "+score, -280, -220);
   text("Highscore: "+highscore, 100, -220);
-  fill(255*ballZ);
-  if (ballZ>0.75 && zVel>0)fill(0, 255*ballZ, 0);
-  ellipse(ballX*ballZ, ballY*ballZ, 50*ballZ, 50*ballZ);
-
+  if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
+  else image(tomato,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
   fill(255, 128, 128, 20);
+  
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
-  fill(padR, padG, padB*0, 100);
-  rectMode(CENTER);
-  rect(handX-width/2, handY-height/2, 50, 50);
-  
   ballX+=xVel;
   ballY+=yVel;
-  ballZ+=zVel;
+  ballZ+=zVel*1.2;
   if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
-  if (ballZ>=1.1) {
+
+  if (ballZ>=1.1 || tomatophase>20) {
     background(0);
-    fill(128, 0, 0);
     textSize(50);
-    text("GAME OVER\nScore: "+score, 0, 0);
+    if(ballZ>=1.1){
+      fill(128, 0, 0);
+      text("GAME OVER\nScore: "+score, 0, 0);
+    }
+    else{
+      fill(128,255,128);
+      text("YOU WIN\nScore: "+score, 0, 0);
+    }
+    textSize(20);
+    text("Hit ENTER to restart",0,200);
     audioPlayer.pause();
     musicstarted=false;
     dead = true;
-    if (score>highscore) {
-      highscore = score;
-    }
+    if (score>highscore) highscore = score;
   }
   if (ballX<=(width/-2)+25) {
     xVel=abs(xVel);
@@ -235,12 +245,8 @@ void game() {
   if (ballY>=(height/2)-25) {
     yVel=abs(yVel)*-1;
   }
-  if (dead) {
-    if (keyPressed) {
-      if (key==ENTER) {
-        restart();
-      }
-    }
+  if (dead && keyPressed && key==ENTER) {
+    restart();
   }
   float aveSize=0;
   for (Float f : paddleSizes) {
@@ -251,31 +257,35 @@ void game() {
   if (paddleSizes.size()>2 && abs(paddleSizes.get(paddleSizes.size()-1)-paddleSizes.get(paddleSizes.size()-2))>abs(aveSize*0.5)) {
     hit();
   }
-  
+  else{
+    tint(padR, padG, padB);
+    image(spatula,handX-width/2, handY-height/2, 70, 70);
+  }
+ 
 }
 
 void hit() {
-  fill(padR*2, padG*2, padB*2, 100);
-  rectMode(CENTER);
-  rect(handX-width/2, handY-height/2, 50, 50);
+  tint(padR*2, padG*2, padB*2);
+  image(spatulax, handX-width/2, handY-height/2, -70, 70);
   if (ballZ>0.75 && ballZ<1.1 && zVel>0) {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
-      //////println("hit");
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.7-ballZ)/100-score/1000;
+      zVel=(0.7-ballZ)/100-score/5000;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
+      if(score%2==0)tomatophase=(int)(score/2);loadimages(tomatophase);
     }
-  } else {
-    //score-=0.05;
   }
 }
 
 void setupScreen() {
-  background=loadImage("Background.png");
-  ballZ=0.01;
+  background=loadImage("art/Background.png");
+  spatula=loadImage("art/spatula.png");
+  spatulax=loadImage("art/spatulax.png");
+  loadimages(tomatophase);
+  ballZ=0.5;
   zVel=0.01;
   xVel=random(5)-2.5;
   yVel=random(5)-2.5;
@@ -283,14 +293,19 @@ void setupScreen() {
 
 void restart() {
   score=0;
+  tomatophase=1;
   dead=false;
   setupScreen();
 }
 
-
-//CAMSTUFF
-//CAMSTUFF
-//CAMSTUFF BUFFER
+void loadimages(int i){
+  tomato=loadImage("art/tomato"+i+".png");
+  tomatox=loadImage("art/tomato"+i+"x.png");
+  if(i>20){
+   tomato=loadImage("art/c.png");
+   tomatox=loadImage("art/c.png");
+  }
+}
 
 void camstuff() {
   if (cam.available() == true) {
@@ -310,7 +325,6 @@ void camstuff() {
   
   blur();
   
-  //image(cam, 0, 0);
   objects = new int[h][l];
 
 
@@ -326,14 +340,11 @@ void camstuff() {
   findUnique();
 
   fillBiggest();
-  findEdges();
   //updatePixels();
 
-  //pause();
-  //fill(0,255,255);
-  //ellipse(COG(xLoc, yLoc)[0] , COG(xLoc, yLoc)[1], 50, 50);
-  handX=COG(xLoc, yLoc)[0];
-  handY=COG(xLoc, yLoc)[1];
+  float[]coor=COG(xLoc,yLoc);
+  handX=coor[0];
+  handY=coor[1];
 }
 
 void fillBiggest() {
@@ -357,6 +368,8 @@ void fillBiggest() {
       biggest = i;
     }
   }
+  paddleSizes.add(new Float(sizes[biggest]));
+  if(paddleSizes.size()>10)paddleSizes.remove(0);
   xLoc.clear();
   yLoc.clear();
   for (int y = 0; y<h; y++) {
@@ -397,91 +410,7 @@ boolean isHand(color c) {
   float green = green(c);
   float blue = blue(c);
   float red = red(c);
-  if (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) ) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-void findEdges() {
-  edges = new int[4][2];
-  // find top
-A:
-  for (int y = 0; y<h; y++) {
-B: 
-    for (int x = 0; x < l; x++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[0][0] = y;
-        edges[0][1] = x;
-        break A;
-      }
-    }
-  }
-
-  // find bottom
-C: 
-  for (int y = h-1; y > -1; y--) {
-D: 
-    for (int x = 0; x < l; x++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[1][0] = y;
-        edges[1][1] = x;
-        break C;
-      }
-    }
-  }
-
-  // find left
-E: 
-  for (int x = 0; x < l; x++) {
-F: 
-    for (int y = 0; y < h; y++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[2][0] = y;
-        edges[2][1] = x;
-        break E;
-      }
-    }
-  }
-
-  // right
-G: 
-  for (int x = (l-1); x > -1; x--) {
-H: 
-    for (int y = 0; y < h; y++) {
-      if (pixels[ y*l + x] != color(0) ) {
-        edges[3][0] = y;
-        edges[3][1] = x;
-        break G;
-      }
-    }
-  }
-  /*
-  ellipseMode(CENTER);
-   fill(255);
-   for (int i =0; i < edges.length; i++) {
-   ellipse( edges[i][1], edges[i][0], 10, 10);
-   ////println( edges[i][0] + " , " + edges[i][1] );
-   }
-   */
-  makeRect( edges );
-}
-
-void makeRect( int[][] coords ) {
-  // order: top, bottom, left, right
-  int maxY, minY, maxX, minX;
-  maxY = coords[0][0];
-  minY = coords[1][0];
-  maxX = coords[3][1];
-  minX = coords[2][1];
-  rectMode(CORNER);
-  noFill();
-  stroke(255, 0, 0);
-  rect( minX, minY, maxX - minX, maxY - minY );
-  paddleSizes.add(new Float((maxY-minX)*(maxY-minY)));
-  if (paddleSizes.size()>20)paddleSizes.remove(0);
-  fill(255);
+  return (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) );
 }
 
 void markSeparate() {
@@ -546,15 +475,6 @@ void findUnique() {
       unique.add(i);
     }
   }
-  /*
-  //if (start) {
-   blobs = new color[ unique.size() ];
-   for (int i = 0; i < blobs.length; i++) {
-   blobs[i] = color( random(255), random(255), random(255 ) );
-   }
-   //start = false;
-   //}
-   */
 }
 
 int findMin( int a, int b, int c, int d ) {
@@ -609,9 +529,6 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
   }
   ans[0] = ans[0]/x.size();
   ans[1] = ans[1]/y.size();
-  /*if ( (COG[0] > (-1.0 - 0.00001)) && (COG[0] < (-1.0 + 0.00001))) { 
-   COG = ans;
-   } else if (ans[0]*/
   oleCOG[frCo] = ans; 
   frCo++;
   return ans;
@@ -619,7 +536,6 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
 
 
 void blur() {
-  //if (toggle) {
   loadPixels();
 
   for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
