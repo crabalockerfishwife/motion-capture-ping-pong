@@ -71,7 +71,6 @@ class UDPServer
 		System.out.println("RECEIVED: " + sentence);
 		InetAddress IPAddress = receivePacket.getAddress();
 		String capitalizedSentence = sentence.toUpperCase();
-		capitalizedSentence += port;
 		System.out.println(capitalizedSentence);
 		if (res == 1) {
 		    IPOne = receivePacket.getAddress();
@@ -79,20 +78,27 @@ class UDPServer
 		}
 		else if (res == 2) {
 		    IPTwo = receivePacket.getAddress();
-		    String outTwo = Arrays.toString(swap(getVals(capitalizedSentence)));
+		    String outTwo = /*Arrays.toString(swap(getVals(*/capitalizedSentence + "Send One"/*)))*/;
 		    sendData = capitalizedSentence.getBytes();
+		    System.out.println(capitalizedSentence);
+		    System.out.println(clieOne);
 		    DatagramPacket senPac = new DatagramPacket(sendData, sendData.length, IPOne, clieOne);
 		    serverSocket.send(senPac);
 		    System.out.println("Client One Sent");
-		    serverSocket.close();
-		    serverSocket = new DatagramSocket(9876);
+		    //serverSocket.close();
+		    //serverSocket = new DatagramSocket(9876);
 		    sendData = outTwo.getBytes();
+		    System.out.println(outTwo);
+		    System.out.println(clieTwo);
 		    DatagramPacket sedPak = new DatagramPacket(sendData, sendData.length, IPTwo, clieTwo);
 		    serverSocket.send(sedPak);
 		    System.out.println("Client Two Sent");
-		    serverSocket.close();
-		    serverSocket = new DatagramSocket(9876);
+		    //serverSocket.close();
+		    //serverSocket = new DatagramSocket(9876);
 		}
+		capitalizedSentence += port;
+		System.out.println(capitalizedSentence);
+		System.out.println(port);
                 sendData = capitalizedSentence.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 		System.out.println("Data sent");
@@ -117,7 +123,7 @@ class UDPServer
     }
 
     private float[] getVals (String inp) {
-	float[] out = new float[6];
+	float[] out = new float[4];
 	int st = 0;
 	int ind = 0;
 	for (int i = 0; i < inp.length(); i++) {

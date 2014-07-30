@@ -1,7 +1,7 @@
 import ddf.minim.*;
 import processing.video.*;
 
-final static int id = (int) random(100,999);
+//final static int id = (int) random(100,999);
 
 float handX, handY;
 

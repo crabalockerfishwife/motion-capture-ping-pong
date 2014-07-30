@@ -1,0 +1,8 @@
+while I cant go
+	Sleep
+
+Synchronized object
+	it works with only one thread at one time per synchronizeed object
+	the other that wishes to run will be forced to wait
+	The operating thread has the lock everything else waits for it
+	once the operating thread terminates, either ends or goes to sleep, then you use a notify all to wake up all the other threads  
