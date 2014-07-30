@@ -401,12 +401,11 @@ boolean isHand(color c) {
 
 void markSeparate() {
   int cnt = 1;
-  int cur;
-
+  
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
 
-      cur = y*l+x;
+      int cur = y*l+x;
       int a = 0;
       int b = 0;
       int c = 0;
