@@ -6,7 +6,8 @@ float handX, handY;
 Capture cam;
 int[][] objects;
 int l, h;
-ArrayList<Integer> label, unique;
+ArrayList<Integer> label;
+ArrayList<Integer> unique;
 int[][] edges;
 ArrayList<Float> xLoc = new ArrayList<Float>();
 ArrayList<Float> yLoc = new ArrayList<Float>();
@@ -147,21 +148,23 @@ void draw(){
 }
 
 void eastereggcheck(){
-  if (keyPressed && (key == 'j' || key == 's' || key == 'm' || key == 't' || key == 'y')){
+  if (keyPressed && (key == 'j' || key == 's' || key == 'm' || key == 't' || key == 'y' || key == 'c')){
     if(!easteregg){
        tomato=loadImage("art/"+key+".png");
        tomatox=loadImage("art/"+key+".png");
+       easteregg=true;
     }
      else{
        loadimages(tomatophase);
+       easteregg=false;
      }
-     easteregg=!easteregg;
   }
 }
 
 void calibrate(){
-  if (cam.available() == true) cam.read();
-  
+  if (cam.available() == true) {
+    cam.read();
+  }
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -176,9 +179,9 @@ void calibrate(){
   topLeft=color(pixels[0]);
   fill(255);
   textSize(20);
-  
-  if(!capture) text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
-  
+  if(!capture){
+    text("Hold paddle over the top left corner, and press spacebar.",0,height-50); 
+  }
   else{
     text("Capturing...",width/2-50,height-50);
     allGR.add(green(topLeft)/red(topLeft));
@@ -189,11 +192,16 @@ void calibrate(){
     allRed.add(red(topLeft));
   }
   
-  if(keyPressed && key==' ') capture=true; 
-  
+  if(keyPressed && key==' '){
+   capture=true; 
+  }
 }
 
 void game() {
+  
+  
+  
+  if(keyPressed && key=='q')score++;
   background(255);
   translate(width/2, height/2);
   camstuff();
@@ -204,9 +212,10 @@ void game() {
   fill(0);
   text("Score: "+score, -280, -220);
   text("Highscore: "+highscore, 100, -220);
-  
-  if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
+  fill(255*ballZ);
+  if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);//fill(0, 255*ballZ, 0);
   else image(tomato,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
+  //ellipse(ballX*ballZ, ballY*ballZ, 50*ballZ, 50*ballZ);
   fill(255, 128, 128, 20);
   
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
@@ -217,24 +226,34 @@ void game() {
   if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
-  
-  if(ballZ>=1.1 || tomatophase>20){
+
+  if (ballZ>=1.1) {
     background(0);
+    fill(128, 0, 0);
     textSize(50);
-    if(ballZ>=1.1){
-      fill(128,0,0);
-      text("GAME OVER\nScore: "+score,0,0);
-    }
-    else{
-      fill(128,255,128);
-      text("YOU WIN\nScore: "+score,0,0);
-    }
+    text("GAME OVER\nScore: "+score, 0, 0);
     textSize(20);
     text("Hit ENTER to restart",0,200);
     audioPlayer.pause();
     musicstarted=false;
     dead = true;
-    if (score>highscore) highscore = score;
+    if (score>highscore) {
+      highscore = score;
+    }
+  }
+ if (tomatophase>20) {
+    background(0);
+    fill(128, 255, 128);
+    textSize(50);
+    text("YOU WIN\nScore: "+score, 0, 0);
+    textSize(20);
+    text("Hit ENTER to restart",0,200);
+    audioPlayer.pause();
+    musicstarted=false;
+    dead = true;
+    if (score>highscore) {
+      highscore = score;
+    }
   }
 
   if (ballX<=(width/-2)+25) {
@@ -275,11 +294,11 @@ void hit() {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.7-ballZ)/100-score/1000;
+      zVel=(0.7-ballZ)/100-score/5000;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
-      if(score%5==0)tomatophase++;loadimages(tomatophase);
+      if(score%2==0)tomatophase=(int)(score/2);loadimages(tomatophase);
     }
   }
 }
@@ -305,6 +324,10 @@ void restart() {
 void loadimages(int i){
   tomato=loadImage("art/tomato"+i+".png");
   tomatox=loadImage("art/tomato"+i+"x.png");
+  if(i>20){
+   tomato=loadImage("art/c.png");
+   tomatox=loadImage("art/c.png");
+  }
 }
 
 void camstuff() {
@@ -368,6 +391,8 @@ void fillBiggest() {
       biggest = i;
     }
   }
+  paddleSizes.add(new Float(sizes[biggest]));
+  if(paddleSizes.size()>10)paddleSizes.remove(0);
   xLoc.clear();
   yLoc.clear();
   for (int y = 0; y<h; y++) {
