@@ -479,29 +479,17 @@ void findUnique() {
 
 int findMin( int a, int b, int c, int d ) {
   ArrayList<Integer> cont = new ArrayList<Integer>();
-  if (a!=0)
-    cont.add(a);
-  if (b!=0)
-    cont.add(b);
-  if (c!= 0)
-    cont.add(c);
-  if (d!= 0)
-    cont.add(d);
+  if (a!=0) cont.add(a);
+  if (b!=0) cont.add(b);
+  if (c!=0) cont.add(c);
+  if (d!=0) cont.add(d);
 
   int ret = cont.get(0);
   for (int i = 1; i < cont.size (); i++) {
-    if (cont.get(i) < ret) {
-      ret = cont.get(i);
-    }
+    if (cont.get(i) < ret) ret = cont.get(i);
   }
-
+    
   return ret;
-}
-
-void pause (int s) {
-  int mili = millis();
-  while (millis () < mili + 1000 * s) {
-  }
 }
 
 float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
