@@ -423,19 +423,11 @@ void markSeparate() {
       int d = 0;
       if ( objects[y][x] == 255) {
 
-        if ( inBounds(y-1, x-1) ) {
-          a = objects[y-1][x-1];
-        }
+        if ( inBounds(y-1, x-1) ) a = objects[y-1][x-1];
+        if ( inBounds(y-1, x) ) b= objects[y-1][x];
+        if ( inBounds(y-1, x+1) ) c = objects[y-1][x+1];
 
-        if ( inBounds(y-1, x) ) {
-          b= objects[y-1][x];
-        }
-        if ( inBounds(y-1, x+1) ) {
-          c = objects[y-1][x+1];
-        }
-        if ( inBounds(y, x-1) ) {
-          d = objects[y][x-1];
-        }
+        if ( inBounds(y, x-1) ) d = objects[y][x-1];
         if ( a==0 && b==0 && c==0 && d==0 ) {
           objects[y][x] = cnt;
           label.add(cnt);
@@ -443,17 +435,11 @@ void markSeparate() {
         } else {
           int min = findMin(a, b, c, d);
           objects[y][x] = min;
-          if (a!=0) {
-            label.set( a, min );
-          }
-          if (b!=0) {
-            label.set( b, min );
-          }
-          if (c!=0) {
-            label.set( c, min ); 
-          }
-          if (d!=0) {
-            label.set( d, min ); 
+          
+          if (a!=0) label.set( a, min );
+          if (b!=0) label.set( b, min );
+          if (c!=0) label.set( c, min ); 
+          if (d!=0) label.set( d, min ); 
           }
         }
       }
