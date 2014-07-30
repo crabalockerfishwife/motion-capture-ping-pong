@@ -156,9 +156,7 @@ void eastereggcheck(){
 }
 
 void calibrate(){
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available()) cam.read();
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -308,9 +306,7 @@ void loadimages(int i){
 }
 
 void camstuff() {
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available()) cam.read();
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
