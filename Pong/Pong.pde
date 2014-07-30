@@ -229,18 +229,12 @@ void game() {
     dead = true;
     if (score>highscore) highscore = score;
   }
-  if (ballX<=(width/-2)+25) {
-    xVel=abs(xVel);
-  }
-  if (ballX>=(width/2)-25) {
-    xVel=abs(xVel)*-1;
-  }
-  if (ballY<=(height/-2)+25) {
-    yVel=abs(yVel);
-  }
-  if (ballY>=(height/2)-25) {
-    yVel=abs(yVel)*-1;
-  }
+  
+  if (ballX<=(width/-2)+25) xVel=abs(xVel);
+  if (ballX>=(width/2)-25) xVel=abs(xVel)*-1;
+  if (ballY<=(height/-2)+25) yVel=abs(yVel);
+  if (ballY>=(height/2)-25) yVel=abs(yVel)*-1;
+  
   if (dead && keyPressed && key==ENTER) {
     restart();
   }
