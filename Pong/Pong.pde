@@ -316,12 +316,10 @@ void camstuff() {
   }
   updatePixels();
   
-  
   blur();
   
   objects = new int[h][l];
-
-
+  
   label.clear();
   label.add(0);
   unique.clear();
