@@ -25,8 +25,8 @@ ArrayList<Float>allRed = new ArrayList<Float>();
 boolean capture=false;
 boolean musicstarted=false;
 boolean easteregg=false;
-float minGR,maxGR,minGB,maxGB,minBR,maxBR, aveGR,aveGB,aveBR;
 
+float minGR,maxGR,minGB,maxGB,minBR,maxBR, aveGR,aveGB,aveBR;
 float padR,padG,padB;
 
 float[][] matrix = {{1,1,1},{1,1,1},{1,1,1}};
@@ -66,9 +66,7 @@ void setup() {
     println("There are no cameras available for capture.");
     exit();
   } else {
-
     cam = new Capture(this, cameras[0]);
-
     cam.start();
   }
   label = new ArrayList<Integer>();
@@ -156,9 +154,7 @@ void eastereggcheck(){
 }
 
 void calibrate(){
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available()) cam.read();
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -188,29 +184,28 @@ void calibrate(){
 }
 
 void game() {
+  if(keyPressed && key=='q')score++; //Just a little cheat for testing.
   
-  
-  
-  if(keyPressed && key=='q')score++;
-  background(255);
   translate(width/2, height/2);
   camstuff();
-  stroke(0);
-  tint(255, 235);
+  tint(255, 230);
   image(background, 0, 0, width, height);
+  
   textSize(15);
   fill(0);
   text("Score: "+score, -280, -220);
   text("Highscore: "+highscore, 100, -220);
+  
   if (ballZ>0.75 && zVel>0)image(tomatox,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
   else image(tomato,ballX*ballZ, ballY*ballZ, 60*ballZ, 60*ballZ);
+
   fill(255, 128, 128, 20);
-  
   ellipse(ballX, ballY, 50, 50); //A projection of where the paddle needs to be to hit the ball.
 
   ballX+=xVel;
   ballY+=yVel;
   ballZ+=zVel*1.2;
+  
   if (ballZ<=0.0) {
     zVel=abs(zVel);
   }
@@ -233,18 +228,12 @@ void game() {
     dead = true;
     if (score>highscore) highscore = score;
   }
-  if (ballX<=(width/-2)+25) {
-    xVel=abs(xVel);
-  }
-  if (ballX>=(width/2)-25) {
-    xVel=abs(xVel)*-1;
-  }
-  if (ballY<=(height/-2)+25) {
-    yVel=abs(yVel);
-  }
-  if (ballY>=(height/2)-25) {
-    yVel=abs(yVel)*-1;
-  }
+  
+  if (ballX<=(width/-2)+25) xVel=abs(xVel);
+  if (ballX>=(width/2)-25) xVel=abs(xVel)*-1;
+  if (ballY<=(height/-2)+25) yVel=abs(yVel);
+  if (ballY>=(height/2)-25) yVel=abs(yVel)*-1;
+  
   if (dead && keyPressed && key==ENTER) {
     restart();
   }
@@ -261,7 +250,6 @@ void game() {
     tint(padR, padG, padB);
     image(spatula,handX-width/2, handY-height/2, 70, 70);
   }
- 
 }
 
 void hit() {
@@ -308,9 +296,7 @@ void loadimages(int i){
 }
 
 void camstuff() {
-  if (cam.available() == true) {
-    cam.read();
-  }
+  if (cam.available()) cam.read();
   cam.loadPixels();
   for (int c = 0; c < cam.width; c++) { // For each pixel in the cam frame...
     for (int r = 0; r < cam.height; r++) {
@@ -320,27 +306,22 @@ void camstuff() {
       pixels[pixLoc] = color(currColor);
     }
   }
+  
   updatePixels();
-  
-  
   blur();
-  
   objects = new int[h][l];
-
-
+  
   label.clear();
   label.add(0);
   unique.clear();
 
   loadPixels();
   markBlobs();
-  //updatePixels();
 
   markSeparate();
   findUnique();
 
   fillBiggest();
-  //updatePixels();
 
   float[]coor=COG(xLoc,yLoc);
   handX=coor[0];
@@ -348,7 +329,6 @@ void camstuff() {
 }
 
 void fillBiggest() {
-
   int[] sizes = new int[ unique.get( unique.size() -1) + 1];
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
@@ -407,39 +387,29 @@ void markBlobs() {
 }
 
 boolean isHand(color c) {
-  float green = green(c);
-  float blue = blue(c);
-  float red = red(c);
-  return (brightness(c)>100 && (green/blue < maxGB) && (green/blue > minGB) && (green/red > minGR) && (green/red < maxGR) && (blue/red > minBR) && (blue/red < maxBR) );
+  float g = green(c);
+  float b = blue(c);
+  float r = red(c);
+  return (brightness(c)>100 && (g/b < maxGB) && (g/b > minGB) && (g/r > minGR) && (g/r < maxGR) && (b/r > minBR) && (b/r < maxBR) );
 }
 
 void markSeparate() {
   int cnt = 1;
-  int cur;
-
+  
   for (int y = 0; y<h; y++) {
     for (int x = 0; x<l; x++) {
-
-      cur = y*l+x;
+      int cur = y*l+x;
       int a = 0;
       int b = 0;
       int c = 0;
       int d = 0;
+      
       if ( objects[y][x] == 255) {
-
-        if ( inBounds(y-1, x-1) ) {
-          a = objects[y-1][x-1];
-        }
-
-        if ( inBounds(y-1, x) ) {
-          b= objects[y-1][x];
-        }
-        if ( inBounds(y-1, x+1) ) {
-          c = objects[y-1][x+1];
-        }
-        if ( inBounds(y, x-1) ) {
-          d = objects[y][x-1];
-        }
+        if ( inBounds(y-1, x-1) ) a = objects[y-1][x-1];
+        if ( inBounds(y-1, x) ) b= objects[y-1][x];
+        if ( inBounds(y-1, x+1) ) c = objects[y-1][x+1];
+        if ( inBounds(y, x-1) ) d = objects[y][x-1];
+        
         if ( a==0 && b==0 && c==0 && d==0 ) {
           objects[y][x] = cnt;
           label.add(cnt);
@@ -447,18 +417,11 @@ void markSeparate() {
         } else {
           int min = findMin(a, b, c, d);
           objects[y][x] = min;
-          if (a!=0) {
-            label.set( a, min );
-          }
-          if (b!=0) {
-            label.set( b, min );
-          }
-          if (c!=0) {
-            label.set( c, min ); 
-          }
-          if (d!=0) {
-            label.set( d, min ); 
-          }
+          
+          if (a!=0) label.set( a, min );
+          if (b!=0) label.set( b, min );
+          if (c!=0) label.set( c, min ); 
+          if (d!=0) label.set( d, min ); 
         }
       }
     }
@@ -479,29 +442,16 @@ void findUnique() {
 
 int findMin( int a, int b, int c, int d ) {
   ArrayList<Integer> cont = new ArrayList<Integer>();
-  if (a!=0)
-    cont.add(a);
-  if (b!=0)
-    cont.add(b);
-  if (c!= 0)
-    cont.add(c);
-  if (d!= 0)
-    cont.add(d);
+  if (a!=0) cont.add(a);
+  if (b!=0) cont.add(b);
+  if (c!=0) cont.add(c);
+  if (d!=0) cont.add(d);
 
   int ret = cont.get(0);
   for (int i = 1; i < cont.size (); i++) {
-    if (cont.get(i) < ret) {
-      ret = cont.get(i);
-    }
+    if (cont.get(i) < ret) ret = cont.get(i);
   }
-
   return ret;
-}
-
-void pause (int s) {
-  int mili = millis();
-  while (millis () < mili + 1000 * s) {
-  }
 }
 
 float[] COG (ArrayList<Float> x, ArrayList<Float> y) {
@@ -534,10 +484,8 @@ float[] newCOG (ArrayList<Float> x, ArrayList<Float> y) {
   return ans;
 }
 
-
 void blur() {
   loadPixels();
-
   for (int c = (matrix.length - 1)/2; c < cam.width-(matrix.length - 1)/2; c++) { // For each pixel in the cam frame...
     for (int r = (matrix.length - 1)/2; r < cam.height-(matrix.length - 1)/2; r++) {
       int loc = c + r*width;
@@ -547,7 +495,6 @@ void blur() {
   }
   updatePixels();
 }
-
 
 color convolve (float[][] matrix, int x, int y) {
   float red =0;
