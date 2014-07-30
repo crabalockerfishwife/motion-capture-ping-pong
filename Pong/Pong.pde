@@ -147,12 +147,11 @@ void eastereggcheck(){
     if(!easteregg){
        tomato=loadImage("art/"+key+".png");
        tomatox=loadImage("art/"+key+"x.png");
-       easteregg=true;
     }
      else{
        loadimages(tomatophase);
-       easteregg=false;
      }
+     easteregg=!easteregg;
   }
 }
 
