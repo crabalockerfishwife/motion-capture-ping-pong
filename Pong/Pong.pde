@@ -146,7 +146,7 @@ void eastereggcheck(){
   if (keyPressed && (key == 'j' || key == 's' || key == 'm' || key == 't' || key == 'y' || key == 'c')){
     if(!easteregg){
        tomato=loadImage("art/"+key+".png");
-       tomatox=loadImage("art/"+key+".png");
+       tomatox=loadImage("art/"+key+"x.png");
        easteregg=true;
     }
      else{
