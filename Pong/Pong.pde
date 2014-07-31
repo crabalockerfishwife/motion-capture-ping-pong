@@ -204,7 +204,7 @@ void game() {
 
   ballX+=xVel;
   ballY+=yVel;
-  ballZ+=zVel*1.2;
+  ballZ+=zVel*2;
   
   if (ballZ<=0.0) {
     zVel=abs(zVel);
@@ -259,7 +259,7 @@ void hit() {
     if (handX-width/2>ballX-50 && handX-width/2<ballX+50 && handY-height/2>ballY-50 && handY-height/2<ballY+50) {
       hitSound.play();
       hitSound.rewind();
-      zVel=(0.7-ballZ)/100-score/5000;
+      zVel=(0.7-ballZ)/100-score/7500;
       xVel+=(ballX-(handX-width/2))/10;
       yVel+=(ballY-(handY-height/2))/10;
       score++;
